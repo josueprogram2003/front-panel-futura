@@ -3,25 +3,31 @@
     <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
     <div *ngIf="evento" class="fade-in">
-        <div class="mb-6">
-            <p-button 
-                icon="pi pi-arrow-left" 
-                label="Volver a Eventos" 
-                [text]="true" 
-                routerLink="/eventos"
-                class="mb-2 block">
-            </p-button>
-            <div class="flex items-center justify-between mt-2">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800 m-0">Dificultades</h2>
-                    <p class="text-slate-500 mt-1">Evento: <span class="font-semibold text-primary-600">{{ evento.nombre }}</span></p>
+        <!-- Professional Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
+            <div>
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-2">
+                    <a routerLink="/eventos" class="hover:text-primary-600 transition-colors flex items-center gap-1">
+                        <i class="pi pi-home text-xs"></i> Eventos
+                    </a>
+                    <i class="pi pi-angle-right text-xs"></i>
+                    <span class="font-semibold text-slate-800">{{ evento.nombre }}</span>
+                </nav>
+                <div class="flex items-center gap-3">
+                    <h1 class="text-3xl font-bold text-slate-900 tracking-tight m-0">Dificultades del Evento</h1>
+                    <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full uppercase tracking-wide border border-blue-100">
+                        Configuración
+                    </span>
                 </div>
+                <p class="text-slate-500 mt-2 text-lg">Asigna y gestiona los niveles de dificultad para este evento específico.</p>
+            </div>
+            <div class="flex gap-3">
                 <p-button 
                     label="Nueva Dificultad" 
                     icon="pi pi-plus" 
                     (onClick)="openNewDifficulty()"
-                    [rounded]="true"
-                    size="small">
+                    styleClass="p-button-primary shadow-lg shadow-blue-500/30"
+                    [rounded]="true">
                 </p-button>
             </div>
         </div>

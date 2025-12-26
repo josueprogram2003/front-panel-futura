@@ -3,29 +3,31 @@
     <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
     <div *ngIf="evento && eventoDificultad" class="fade-in">
-        <div class="mb-6">
-            <p-button 
-                icon="pi pi-arrow-left" 
-                label="Volver a Dificultades" 
-                [text]="true" 
-                [routerLink]="['/eventos', eventoId, 'dificultades']"
-                class="mb-2 block">
-            </p-button>
-            <div class="flex items-center justify-between mt-2">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800 m-0">Preguntas</h2>
-                    <p class="text-slate-500 mt-1">
-                        Evento: <span class="font-semibold text-primary-600">{{ evento.nombre }}</span>
-                        <span class="mx-2 text-slate-300">/</span>
-                        Dificultad: <span class="font-semibold text-primary-600">{{ eventoDificultad.dificultad?.nombre }}</span>
-                    </p>
+        <!-- Professional Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
+            <div>
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-2">
+                    <a routerLink="/eventos" class="hover:text-primary-600 transition-colors">Eventos</a>
+                    <i class="pi pi-angle-right text-xs"></i>
+                    <a [routerLink]="['/eventos', eventoId, 'dificultades']" class="hover:text-primary-600 transition-colors">{{ evento.nombre }}</a>
+                    <i class="pi pi-angle-right text-xs"></i>
+                    <span class="font-semibold text-slate-800">{{ eventoDificultad.dificultad?.nombre }}</span>
+                </nav>
+                <div class="flex items-center gap-3">
+                    <h1 class="text-3xl font-bold text-slate-900 tracking-tight m-0">Banco de Preguntas</h1>
+                    <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-full uppercase tracking-wide border border-green-100">
+                        {{ eventoDificultad.dificultad?.nombre }}
+                    </span>
                 </div>
+                <p class="text-slate-500 mt-2 text-lg">Administra las preguntas y alternativas para este nivel de dificultad.</p>
+            </div>
+            <div class="flex gap-3">
                 <p-button 
                     label="Nueva Pregunta" 
                     icon="pi pi-plus" 
                     (onClick)="openNewQuestion()"
-                    [rounded]="true"
-                    size="small">
+                    styleClass="p-button-primary shadow-lg shadow-green-500/30"
+                    [rounded]="true">
                 </p-button>
             </div>
         </div>

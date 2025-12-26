@@ -67,6 +67,22 @@ export class EventoService {
     return this.dificultades;
   }
 
+  saveDificultad(dificultad: Dificultad): void {
+    if (dificultad.id) {
+      const index = this.dificultades.findIndex(d => d.id === dificultad.id);
+      if (index !== -1) {
+        this.dificultades[index] = dificultad;
+      }
+    } else {
+      dificultad.id = this.createId();
+      this.dificultades.push(dificultad);
+    }
+  }
+
+  deleteDificultad(id: number): void {
+    this.dificultades = this.dificultades.filter(d => d.id !== id);
+  }
+
   getEventoById(id: number): Evento | undefined {
     return this.eventos.find(e => e.id === id);
   }
