@@ -10,6 +10,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { Dificultad } from '../../core/models';
 import { EventoService } from '../../core/services/evento.service';
+import { LoadingOverlayComponent } from '../../shared/components/loading-overlay/loading-overlay.component';
 
 @Component({
   selector: 'app-dificultades',
@@ -22,7 +23,8 @@ import { EventoService } from '../../core/services/evento.service';
     ButtonModule,
     InputTextModule,
     ToastModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    LoadingOverlayComponent
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './dificultades.component.html'
@@ -33,6 +35,7 @@ export class DificultadesComponent implements OnInit {
   
   dificultadDialog: boolean = false;
   submitted: boolean = false;
+  loading: boolean = false;
 
   constructor(
     private eventoService: EventoService,
@@ -45,7 +48,17 @@ export class DificultadesComponent implements OnInit {
   }
 
   loadDificultades() {
-    this.dificultades = this.eventoService.getDificultades();
+    this.loading = true;
+    this.eventoService.getDificultades().subscribe({
+      next: (data) => {
+        this.dificultades = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar dificultades' });
+      }
+    });
   }
 
   openNewDificultad() {
@@ -65,9 +78,15 @@ export class DificultadesComponent implements OnInit {
       header: 'Confirmar',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.eventoService.deleteDificultad(dificultad.id);
-        this.loadDificultades();
-        this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad eliminada', life: 3000 });
+        this.eventoService.deleteDificultad(dificultad.id).subscribe({
+          next: () => {
+            this.loadDificultades();
+            this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad eliminada', life: 3000 });
+          },
+          error: (err) => {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar dificultad' });
+          }
+        });
       }
     });
   }
@@ -76,11 +95,17 @@ export class DificultadesComponent implements OnInit {
     this.submitted = true;
 
     if (this.dificultad.nombre?.trim()) {
-      this.eventoService.saveDificultad(this.dificultad);
-      this.loadDificultades();
-      this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
-      this.dificultadDialog = false;
-      this.dificultad = this.createEmptyDificultad();
+      this.eventoService.saveDificultad(this.dificultad).subscribe({
+        next: () => {
+          this.loadDificultades();
+          this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
+          this.dificultadDialog = false;
+          this.dificultad = this.createEmptyDificultad();
+        },
+        error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar dificultad' });
+        }
+      });
     }
   }
 

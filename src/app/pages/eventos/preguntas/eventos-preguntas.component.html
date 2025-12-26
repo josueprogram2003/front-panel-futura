@@ -1,13 +1,15 @@
-<div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+<div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-4rem)] flex flex-col">
     <p-toast></p-toast>
     <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
-    <div *ngIf="evento && eventoDificultad" class="fade-in">
+    <div *ngIf="evento && eventoDificultad" class="fade-in flex flex-col h-full">
         <!-- Professional Header -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
+        <div class="flex-none flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
             <div>
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-2">
-                    <a routerLink="/eventos" class="hover:text-primary-600 transition-colors">Eventos</a>
+                    <a routerLink="/eventos" class="hover:text-primary-600 transition-colors flex items-center gap-1">
+                        <i class="pi pi-home text-xs"></i> Eventos
+                    </a>
                     <i class="pi pi-angle-right text-xs"></i>
                     <a [routerLink]="['/eventos', eventoId, 'dificultades']" class="hover:text-primary-600 transition-colors">{{ evento.nombre }}</a>
                     <i class="pi pi-angle-right text-xs"></i>
@@ -32,67 +34,72 @@
             </div>
         </div>
 
-        <p-table 
-            [value]="eventoDificultad.preguntas || []" 
-            [rows]="10" 
-            [paginator]="true" 
-            [rowHover]="true"
-            dataKey="id"
-            styleClass="p-datatable-sm">
-            
-            <ng-template pTemplate="header">
-                <tr>
-                    <th style="width: 5rem">ID</th>
-                    <th style="width: 40%">Pregunta</th>
-                    <th style="width: 15%">Tipo</th>
-                    <th style="width: 15%">Alternativas</th>
-                    <th style="width: 25%" class="text-center">Acciones</th>
-                </tr>
-            </ng-template>
-            
-            <ng-template pTemplate="body" let-pregunta>
-                <tr>
-                    <td class="text-slate-500">#{{ pregunta.id }}</td>
-                    <td class="font-medium text-slate-800">{{ pregunta.pregunta }}</td>
-                    <td>
-                        <p-tag 
-                            [value]="pregunta.tipo === 'alternativa' ? 'Múltiple' : 'V/F'" 
-                            [severity]="pregunta.tipo === 'alternativa' ? 'info' : 'warn'"
-                            [rounded]="true">
-                        </p-tag>
-                    </td>
-                    <td>
-                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">
-                            {{ pregunta.alternativas.length }} opciones
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <div class="flex justify-center gap-2">
-                            <p-button 
-                                icon="pi pi-pencil" 
-                                [rounded]="true" 
-                                [text]="true" 
-                                severity="secondary"
-                                (onClick)="editQuestion(pregunta)">
-                            </p-button>
-                            <p-button 
-                                icon="pi pi-trash" 
-                                [rounded]="true" 
-                                [text]="true" 
-                                severity="danger" 
-                                (onClick)="deleteQuestion(pregunta)">
-                            </p-button>
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-            
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="5" class="text-center p-4">No hay preguntas registradas para esta dificultad.</td>
-                </tr>
-            </ng-template>
-        </p-table>
+        <div class="flex-1 overflow-hidden relative">
+            <app-loading-overlay [loading]="loading"></app-loading-overlay>
+            <p-table 
+                [value]="eventoDificultad.preguntas || []" 
+                [rows]="10" 
+                [paginator]="true" 
+                [rowHover]="true"
+                dataKey="id"
+                styleClass="p-datatable-sm h-full flex flex-col"
+                [scrollable]="true" 
+                scrollHeight="flex">
+                
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 5rem">ID</th>
+                        <th style="width: 40%">Pregunta</th>
+                        <th style="width: 15%">Tipo</th>
+                        <th style="width: 15%">Alternativas</th>
+                        <th style="width: 25%" class="text-center">Acciones</th>
+                    </tr>
+                </ng-template>
+                
+                <ng-template pTemplate="body" let-pregunta>
+                    <tr>
+                        <td class="text-slate-500">#{{ pregunta.id }}</td>
+                        <td class="font-medium text-slate-800">{{ pregunta.pregunta }}</td>
+                        <td>
+                            <p-tag 
+                                [value]="pregunta.tipo === 'alternativa' ? 'Múltiple' : 'V/F'" 
+                                [severity]="pregunta.tipo === 'alternativa' ? 'info' : 'warn'"
+                                [rounded]="true">
+                            </p-tag>
+                        </td>
+                        <td>
+                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">
+                                {{ pregunta.alternativas.length }} opciones
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <div class="flex justify-center gap-2">
+                                <p-button 
+                                    icon="pi pi-pencil" 
+                                    [rounded]="true" 
+                                    [text]="true" 
+                                    severity="secondary"
+                                    (onClick)="editQuestion(pregunta)">
+                                </p-button>
+                                <p-button 
+                                    icon="pi pi-trash" 
+                                    [rounded]="true" 
+                                    [text]="true" 
+                                    severity="danger" 
+                                    (onClick)="deleteQuestion(pregunta)">
+                                </p-button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="5" class="text-center p-4">No hay preguntas registradas para esta dificultad.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
     </div>
 
     <!-- QUESTION DIALOG -->

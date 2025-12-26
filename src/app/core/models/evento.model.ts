@@ -4,7 +4,7 @@ export interface Evento {
   id: number;
   nombre: string;
   descripcion?: string;
-  fecha?: string; // Using string for date to match typical JSON/Input date format
+  fecha?: string | Date;
   isActive: boolean;
 
   // Navigation property

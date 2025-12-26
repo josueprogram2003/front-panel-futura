@@ -1,10 +1,10 @@
-<div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+<div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-4rem)] flex flex-col">
     <p-toast></p-toast>
 
     <!-- EVENTS VIEW -->
-    <div class="fade-in">
+    <div class="fade-in flex flex-col h-full">
         <!-- Professional Header -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
+        <div class="flex-none flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
             <div>
                 <div class="flex items-center gap-2 text-primary-600 mb-1">
                     <i class="pi pi-calendar text-sm"></i>
@@ -24,20 +24,23 @@
             </div>
         </div>
 
-        <p-table 
-            #dt 
-            [value]="eventos" 
-            [rows]="10" 
-            [paginator]="true" 
-            [globalFilterFields]="['nombre', 'descripcion']"
-            [tableStyle]="{ 'min-width': '60rem' }"
-            [rowHover]="true"
-            dataKey="id"
-            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} eventos"
-            [showCurrentPageReport]="true"
-            styleClass="p-datatable-sm">
-            
-            <ng-template pTemplate="header">
+        <div class="flex-1 overflow-hidden">
+            <p-table 
+                #dt 
+                [value]="eventos" 
+                [rows]="10" 
+                [paginator]="true" 
+                [globalFilterFields]="['nombre', 'descripcion']"
+                [tableStyle]="{ 'min-width': '60rem' }"
+                [rowHover]="true"
+                dataKey="id"
+                currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} eventos"
+                [showCurrentPageReport]="true"
+                styleClass="p-datatable-sm h-full flex flex-col"
+                [scrollable]="true" 
+                scrollHeight="flex">
+                
+                <ng-template pTemplate="header">
                 <tr>
                     <th pSortableColumn="nombre" style="width:30%">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
                     <th pSortableColumn="fecha" style="width:20%">Fecha <p-sortIcon field="fecha"></p-sortIcon></th>
@@ -57,7 +60,7 @@
                     </td>
                     <td class="text-slate-600">{{ evento.descripcion }}</td>
                     <td class="text-center">
-                        <div class="flex justify-center gap-2">
+                        <div class="flex justify-start gap-2">
                             <p-button 
                                 icon="pi pi-list" 
                                 [rounded]="true" 
@@ -89,35 +92,45 @@
                     </td>
                 </tr>
             </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="4" class="text-center p-4">No hay eventos registrados.</td>
+                </tr>
+            </ng-template>
         </p-table>
+        </div>
     </div>
 
     <!-- EVENT DIALOG -->
     <p-dialog 
         [(visible)]="eventDialog" 
         [style]="{ width: '450px' }" 
-        header="Detalles del Evento" 
+        [header]="eventForm.get('id')?.value ? 'Editar Evento' : 'Nuevo Evento'"
         [modal]="true" 
         styleClass="p-fluid">
         <ng-template pTemplate="content">
-            <div class="field mb-4">
-                <label for="nombre" class="font-semibold block mb-2">Nombre</label>
-                <input type="text" pInputText id="nombre" [(ngModel)]="evento.nombre" required autofocus />
-                <small class="p-error block" *ngIf="submitted && !evento.nombre">El nombre es requerido.</small>
-            </div>
-            <div class="field mb-4">
-                <label for="descripcion" class="font-semibold block mb-2">Descripción</label>
-                <textarea id="descripcion" pInputText [(ngModel)]="evento.descripcion" required rows="3" class="w-full p-2 border rounded"></textarea>
-            </div>
-            <div class="field mb-4">
-                <label for="fecha" class="font-semibold block mb-2">Fecha</label>
-                <input type="date" pInputText id="fecha" [(ngModel)]="evento.fecha" />
-            </div>
+            <form [formGroup]="eventForm" class="flex flex-col gap-4">
+                <div class="field">
+                    <label for="nombre" class="font-semibold block mb-2">Nombre</label>
+                    <input type="text" pInputText id="nombre" formControlName="nombre" class="w-full" autofocus />
+                    <small class="p-error block" *ngIf="submitted && eventForm.get('nombre')?.invalid">El nombre es requerido.</small>
+                </div>
+                <div class="field">
+                    <label for="descripcion" class="font-semibold block mb-2">Descripción</label>
+                    <textarea id="descripcion" pInputText formControlName="descripcion" rows="3" class="w-full p-2 border rounded"></textarea>
+                    <small class="p-error block" *ngIf="submitted && eventForm.get('descripcion')?.invalid">La descripción es requerida.</small>
+                </div>
+                <div class="field">
+                    <label for="fecha" class="font-semibold block mb-2">Fecha</label>
+                    <input type="date" pInputText id="fecha" formControlName="fecha" class="w-full" />
+                    <small class="p-error block" *ngIf="submitted && eventForm.get('fecha')?.invalid">La fecha es requerida.</small>
+                </div>
+            </form>
         </ng-template>
 
         <ng-template pTemplate="footer">
             <p-button label="Cancelar" icon="pi pi-times" [text]="true" (onClick)="hideEventDialog()"></p-button>
-            <p-button label="Guardar" icon="pi pi-check" [text]="true" (onClick)="saveEvent()"></p-button>
+            <p-button [label]="eventForm.get('id')?.value ? 'Actualizar' : 'Guardar'" icon="pi pi-check" [text]="true" (onClick)="saveEvent()"></p-button>
         </ng-template>
     </p-dialog>
 

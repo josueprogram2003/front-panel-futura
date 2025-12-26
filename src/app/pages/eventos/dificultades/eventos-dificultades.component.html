@@ -1,10 +1,10 @@
-<div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+<div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-4rem)] flex flex-col">
     <p-toast></p-toast>
     <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
-    <div *ngIf="evento" class="fade-in">
+    <div *ngIf="evento" class="fade-in flex flex-col h-full">
         <!-- Professional Header -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
+        <div class="flex-none flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
             <div>
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-2">
                     <a routerLink="/eventos" class="hover:text-primary-600 transition-colors flex items-center gap-1">
@@ -32,15 +32,19 @@
             </div>
         </div>
 
-        <p-table 
-            [value]="evento.evento_dificultad || []" 
-            [rows]="10" 
-            [paginator]="true" 
-            [rowHover]="true"
-            dataKey="id"
-            styleClass="p-datatable-sm">
-            
-            <ng-template pTemplate="header">
+        <div class="flex-1 overflow-hidden relative">
+            <app-loading-overlay [loading]="loading"></app-loading-overlay>
+            <p-table 
+                [value]="evento.evento_dificultad || []" 
+                [rows]="10" 
+                [paginator]="true" 
+                [rowHover]="true"
+                dataKey="id"
+                styleClass="p-datatable-sm h-full flex flex-col"
+                [scrollable]="true" 
+                scrollHeight="flex">
+                
+                <ng-template pTemplate="header">
                 <tr>
                     <th style="width: 5rem">ID</th>
                     <th style="width: 50%">Nombre</th>

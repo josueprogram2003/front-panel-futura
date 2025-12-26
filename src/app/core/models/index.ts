@@ -4,3 +4,4 @@ export * from './dificultad.model';
 export * from './evento-dificultad.model';
 export * from './evento.model';
 export * from './configuracion.model';
+export * from './api-response.model';

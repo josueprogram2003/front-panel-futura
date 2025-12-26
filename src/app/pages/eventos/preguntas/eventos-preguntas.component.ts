@@ -14,6 +14,7 @@ import { TagModule } from 'primeng/tag';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { Evento, EventoDificultad, Pregunta } from '../../../core/models';
 import { EventoService } from '../../../core/services/evento.service';
+import { LoadingOverlayComponent } from '../../../shared/components/loading-overlay/loading-overlay.component';
 
 @Component({
   selector: 'app-eventos-preguntas',
@@ -30,7 +31,8 @@ import { EventoService } from '../../../core/services/evento.service';
     ConfirmDialogModule,
     DropdownModule,
     CheckboxModule,
-    TagModule
+    TagModule,
+    LoadingOverlayComponent
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './eventos-preguntas.component.html'
@@ -44,6 +46,7 @@ export class EventosPreguntasComponent implements OnInit {
   questionDialog: boolean = false;
   pregunta: Pregunta = this.createEmptyQuestion();
   submitted: boolean = false;
+  loading: boolean = false;
 
   tiposPregunta = [
     { label: 'Alternativa Múltiple', value: 'alternativa' },
@@ -72,13 +75,37 @@ export class EventosPreguntasComponent implements OnInit {
   }
 
   loadData() {
-    this.evento = this.eventoService.getEventoById(this.eventoId);
-    this.eventoDificultad = this.eventoService.getEventoDificultad(this.eventoId, this.dificultadId);
+    this.loading = true;
+    this.eventoService.getEventoById(this.eventoId).subscribe({
+      next: (data) => {
+        this.evento = data;
+        if (!this.evento) {
+           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Evento no encontrado' });
+           this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
+        }
+      },
+      error: (err) => {
+         this.loading = false;
+         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar evento' });
+         this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
+      }
+    });
 
-    if (!this.evento || !this.eventoDificultad) {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Datos no encontrados' });
-      this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
-    }
+    this.eventoService.getEventoDificultad(this.eventoId, this.dificultadId).subscribe({
+      next: (data) => {
+        this.eventoDificultad = data;
+        this.loading = false;
+        if (!this.eventoDificultad) {
+           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Dificultad no encontrada' });
+           this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
+        }
+      },
+      error: (err) => {
+         this.loading = false;
+         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar dificultad' });
+         this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
+      }
+    });
   }
 
   openNewQuestion() {
@@ -127,6 +154,7 @@ export class EventosPreguntasComponent implements OnInit {
             this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta actualizada', life: 3000 });
         }
       } else {
+        // ID generation should be handled by backend usually, but for nested object update we might need it or backend ignores 0
         this.pregunta.id = this.eventoService.createId();
         this.pregunta.evento_dificultad_id = this.eventoDificultad.id;
         this.eventoDificultad.preguntas.push(this.pregunta);
@@ -141,11 +169,15 @@ export class EventosPreguntasComponent implements OnInit {
 
   saveChanges() {
     if (this.eventoDificultad && this.evento) {
-        // Since eventoDificultad is a reference from evento (via getEventoDificultad), 
-        // modifying it modifies the object inside evento.evento_dificultad array IF it was returned by reference.
-        // However, let's be explicit to be safe.
-        this.eventoService.updateEventoDificultad(this.eventoId, this.eventoDificultad);
-        this.eventoService.saveEvento(this.evento);
+        // Assuming we save the whole EventoDificultad structure which includes questions
+        this.eventoService.saveEventoDificultad(this.eventoId, this.eventoDificultad).subscribe({
+            next: () => {
+                // Success, maybe reload data or just keep as is
+            },
+            error: (err) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar cambios' });
+            }
+        });
     }
   }
 
