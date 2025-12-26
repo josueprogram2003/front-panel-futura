@@ -8,16 +8,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-
-interface Configuracion {
-    isActiveImpresora: boolean;
-    text_color_pregunta: string;
-    text_color_alternativa: string;
-    color_boton_alternativa: string;
-    color_letra_alternativa: string;
-    preguntas_por_ronda: number;
-    preguntas_para_ganar: number;
-}
+import { Configuracion } from '../../core/models';
 
 @Component({
   selector: 'app-configuracion',
@@ -37,6 +28,8 @@ interface Configuracion {
 })
 export class ConfiguracionComponent {
   config: Configuracion = {
+    id: 1,
+    isActive: true,
     isActiveImpresora: false,
     text_color_pregunta: "#263A85",
     text_color_alternativa: "#263A85",
@@ -50,7 +43,7 @@ export class ConfiguracionComponent {
 
   saveConfig() {
     // Validate
-    if (this.config.preguntas_para_ganar > this.config.preguntas_por_ronda) {
+    if (this.config.preguntas_para_ganar && this.config.preguntas_por_ronda && this.config.preguntas_para_ganar > this.config.preguntas_por_ronda) {
         this.messageService.add({ 
             severity: 'error', 
             summary: 'Error', 

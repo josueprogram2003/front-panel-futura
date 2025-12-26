@@ -1,0 +1,141 @@
+<div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+    <p-toast></p-toast>
+    <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+
+    <div *ngIf="evento && eventoDificultad" class="fade-in">
+        <div class="mb-6">
+            <p-button 
+                icon="pi pi-arrow-left" 
+                label="Volver a Dificultades" 
+                [text]="true" 
+                [routerLink]="['/eventos', eventoId, 'dificultades']"
+                class="mb-2 block">
+            </p-button>
+            <div class="flex items-center justify-between mt-2">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800 m-0">Preguntas</h2>
+                    <p class="text-slate-500 mt-1">
+                        Evento: <span class="font-semibold text-primary-600">{{ evento.nombre }}</span>
+                        <span class="mx-2 text-slate-300">/</span>
+                        Dificultad: <span class="font-semibold text-primary-600">{{ eventoDificultad.dificultad?.nombre }}</span>
+                    </p>
+                </div>
+                <p-button 
+                    label="Nueva Pregunta" 
+                    icon="pi pi-plus" 
+                    (onClick)="openNewQuestion()"
+                    [rounded]="true"
+                    size="small">
+                </p-button>
+            </div>
+        </div>
+
+        <p-table 
+            [value]="eventoDificultad.preguntas || []" 
+            [rows]="10" 
+            [paginator]="true" 
+            [rowHover]="true"
+            dataKey="id"
+            styleClass="p-datatable-sm">
+            
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 5rem">ID</th>
+                    <th style="width: 40%">Pregunta</th>
+                    <th style="width: 15%">Tipo</th>
+                    <th style="width: 15%">Alternativas</th>
+                    <th style="width: 25%" class="text-center">Acciones</th>
+                </tr>
+            </ng-template>
+            
+            <ng-template pTemplate="body" let-pregunta>
+                <tr>
+                    <td class="text-slate-500">#{{ pregunta.id }}</td>
+                    <td class="font-medium text-slate-800">{{ pregunta.pregunta }}</td>
+                    <td>
+                        <p-tag 
+                            [value]="pregunta.tipo === 'alternativa' ? 'Múltiple' : 'V/F'" 
+                            [severity]="pregunta.tipo === 'alternativa' ? 'info' : 'warn'"
+                            [rounded]="true">
+                        </p-tag>
+                    </td>
+                    <td>
+                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">
+                            {{ pregunta.alternativas.length }} opciones
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <div class="flex justify-center gap-2">
+                            <p-button 
+                                icon="pi pi-pencil" 
+                                [rounded]="true" 
+                                [text]="true" 
+                                severity="secondary"
+                                (onClick)="editQuestion(pregunta)">
+                            </p-button>
+                            <p-button 
+                                icon="pi pi-trash" 
+                                [rounded]="true" 
+                                [text]="true" 
+                                severity="danger" 
+                                (onClick)="deleteQuestion(pregunta)">
+                            </p-button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="5" class="text-center p-4">No hay preguntas registradas para esta dificultad.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <!-- QUESTION DIALOG -->
+    <p-dialog 
+        [(visible)]="questionDialog" 
+        [style]="{ width: '800px' }" 
+        header="Detalles de la Pregunta" 
+        [modal]="true" 
+        styleClass="p-fluid">
+        <ng-template pTemplate="content">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div class="col-span-2">
+                    <label for="pregunta" class="font-semibold block mb-2">Pregunta</label>
+                    <input type="text" pInputText id="pregunta" [(ngModel)]="pregunta.pregunta" required autofocus class="w-full" />
+                    <small class="p-error block" *ngIf="submitted && !pregunta.pregunta">La pregunta es requerida.</small>
+                </div>
+                <div>
+                    <label for="tipo" class="font-semibold block mb-2">Tipo</label>
+                    <p-dropdown [options]="tiposPregunta" [(ngModel)]="pregunta.tipo" (onChange)="onTypeChange()" optionLabel="label" optionValue="value" placeholder="Seleccionar"></p-dropdown>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-lg">Alternativas</h3>
+                    <p-button *ngIf="pregunta.tipo !== 'vf'" label="Agregar Opción" icon="pi pi-plus" [text]="true" size="small" (onClick)="addAlternative()"></p-button>
+                </div>
+
+                <div *ngFor="let alt of pregunta.alternativas; let i = index" class="flex items-center gap-3 mb-3 p-3 bg-slate-50 rounded border border-slate-200">
+                    <span class="font-bold text-slate-500 w-8 text-center">{{ alt.opcion }}</span>
+                    <div class="flex-grow">
+                        <input type="text" pInputText [(ngModel)]="alt.texto" [readonly]="pregunta.tipo === 'vf'" placeholder="Texto de la opción" class="w-full" />
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <p-checkbox [(ngModel)]="alt.respuesta_correcta" [binary]="true"></p-checkbox>
+                        <span class="text-sm">Correcta</span>
+                    </div>
+                    <p-button *ngIf="pregunta.tipo !== 'vf'" icon="pi pi-trash" [text]="true" severity="danger" (onClick)="removeAlternative(i)"></p-button>
+                </div>
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Cancelar" icon="pi pi-times" [text]="true" (onClick)="hideDialog()"></p-button>
+            <p-button label="Guardar" icon="pi pi-check" [text]="true" (onClick)="saveQuestion()"></p-button>
+        </ng-template>
+    </p-dialog>
+</div>
