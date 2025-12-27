@@ -88,16 +88,16 @@
     <p-dialog 
         [(visible)]="dificultadDialog" 
         [style]="{ width: '450px' }" 
-        header="Detalles de la Dificultad" 
+        [header]="dificultadForm.get('id')?.value ? 'Editar Evento' : 'Nuevo Evento'"
         [modal]="true" 
         styleClass="p-fluid">
         <ng-template pTemplate="content">
-            <div class="relative">
+            <div class="relative" [formGroup]="dificultadForm">
                 <app-loading-overlay [loading]="loading" message="Guardando..."></app-loading-overlay>
                 <div class="field mb-4">
                     <label for="nombre" class="font-semibold block mb-2">Nombre</label>
-                    <input type="text" class="w-full" pInputText id="nombre" [(ngModel)]="dificultad.nombre" required autofocus />
-                    <small class="p-error block" *ngIf="submitted && !dificultad.nombre">El nombre es requerido.</small>
+                    <input type="text" class="w-full" pInputText id="nombre" formControlName="nombre" required autofocus />
+                    <small class="p-error block" *ngIf="submitted && difficultyNameControl?.invalid">El nombre es requerido.</small>
                 </div>
             </div>
         </ng-template>

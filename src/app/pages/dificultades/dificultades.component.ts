@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
@@ -18,7 +18,7 @@ import { LoadingOverlayComponent } from '../../shared/components/loading-overlay
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     TableModule,
     DialogModule,
     ButtonModule,
@@ -32,7 +32,7 @@ import { LoadingOverlayComponent } from '../../shared/components/loading-overlay
 })
 export class DificultadesComponent implements OnInit {
   dificultades: Dificultad[] = [];
-  dificultad: Dificultad = this.createEmptyDificultad();
+  dificultadForm: FormGroup;
   
   dificultadDialog: boolean = false;
   submitted: boolean = false;
@@ -41,8 +41,14 @@ export class DificultadesComponent implements OnInit {
   constructor(
     private eventoService: EventoService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
-  ) {}
+    private confirmationService: ConfirmationService,
+    private fb: FormBuilder
+  ) {
+    this.dificultadForm = this.fb.group({
+      id: [0],
+      nombre: ['', [Validators.required]]
+    });
+  }
 
   ngOnInit() {
     this.loadDificultades();
@@ -61,17 +67,22 @@ export class DificultadesComponent implements OnInit {
   }
 
   openNewDificultad() {
-    this.dificultad = this.createEmptyDificultad();
+    this.dificultadForm.reset({
+      id: 0,
+      nombre: '',
+      isActive: true
+    });
     this.submitted = false;
     this.dificultadDialog = true;
   }
 
   editDificultad(dificultad: Dificultad) {
-    this.dificultad = { ...dificultad };
+    this.dificultadForm.patchValue(dificultad);
     this.dificultadDialog = true;
   }
 
   deleteDificultad(dificultad: Dificultad) {
+    console.log("11")
     this.confirmationService.confirm({
       key: 'dificultadesConfirm',
       message: '¿Estás seguro de que deseas eliminar ' + dificultad.nombre + '?',
@@ -95,32 +106,42 @@ export class DificultadesComponent implements OnInit {
   async saveDificultad() {
     this.submitted = true;
 
-    if (this.dificultad.nombre?.trim()) {
-      this.loading = true;
-      try {
-        await firstValueFrom(this.eventoService.saveDificultad(this.dificultad));
-        this.loadDificultades();
-        this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
-        this.dificultadDialog = false;
-        this.dificultad = this.createEmptyDificultad();
-      } catch (err) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar dificultad' });
-      } finally {
-        this.loading = false;
-      }
+    if (this.dificultadForm.valid) {
+      const formValue = this.dificultadForm.value;
+      const isEditing = formValue.id && formValue.id !== 0;
+      const message = isEditing 
+        ? `¿Estás seguro de que deseas editar la dificultad '${formValue.nombre}'?`
+        : `¿Estás seguro de que deseas agregar la dificultad '${formValue.nombre}'?`;
+
+      this.confirmationService.confirm({
+        key: 'dificultadesConfirm',
+        message: message,
+        header: 'Confirmar',
+        icon: 'pi pi-exclamation-triangle',
+        accept: async () => {
+          this.loading = true;
+          try {
+            await firstValueFrom(this.eventoService.saveDificultad(formValue));
+            this.loadDificultades();
+            this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
+            this.dificultadDialog = false;
+            this.dificultadForm.reset();
+          } catch (err) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar dificultad' });
+          } finally {
+            this.loading = false;
+          }
+        }
+      });
     }
+  }
+
+  get difficultyNameControl() {
+    return this.dificultadForm.get('nombre');
   }
 
   hideDialog() {
     this.dificultadDialog = false;
     this.submitted = false;
-  }
-
-  createEmptyDificultad(): Dificultad {
-    return {
-      id: 0,
-      nombre: '',
-      isActive: true
-    };
   }
 }
