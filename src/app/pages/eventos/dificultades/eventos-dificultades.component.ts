@@ -70,19 +70,40 @@ export class EventosDificultadesComponent implements OnInit {
 
   loadEvento() {
     this.loading = true;
+    
+    // 1. Cargar metadatos del evento
     this.eventoService.getEventoById(this.eventoId).subscribe({
       next: (data) => {
         this.evento = data;
-        this.loading = false;
+        
         if (!this.evento) {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Evento no encontrado' });
-          this.router.navigate(['/eventos']);
+             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Evento no encontrado' });
+             this.router.navigate(['/eventos']);
+             return;
         }
+
+        // 2. Cargar dificultades asociadas
+        this.loadDificultadesPorEvento();
       },
       error: (err) => {
         this.loading = false;
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar evento' });
-        this.router.navigate(['/eventos']);
+      }
+    });
+  }
+
+  loadDificultadesPorEvento() {
+    this.eventoService.getEventosDificultadesByEventoId(this.eventoId).subscribe({
+      next: (data) => {
+        if (this.evento) {
+            this.evento.evento_dificultad = data;
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Error loading event difficulties', err);
+        // No bloqueamos la vista, solo no se mostrarán dificultades
       }
     });
   }
@@ -108,26 +129,12 @@ export class EventosDificultadesComponent implements OnInit {
       header: 'Confirmar',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        // Here we might need a specific endpoint to delete EventoDificultad
-        // Or we delete it via saving the event without it, but proper REST would be DELETE /eventos/:id/dificultades/:id
-        // Since I haven't implemented deleteEventoDificultad in service, I will assume we update the event or add the method.
-        // Actually, I didn't add deleteEventoDificultad. I'll check if I should add it or use saveEvento.
-        // Given I'm making it "ready for http", I should probably use a delete endpoint.
-        // I'll assume we can't easily delete nested via saveEvento in a real API efficiently.
-        // I'll add deleteEventoDificultad to service or use a workaround.
-        // For now, let's assume we use saveEvento logic but adapted for HTTP? No, that's heavy.
-        // I will implement it as if deleteEventoDificultad exists or use a direct HTTP call here? No, service is better.
-        // I'll assume I can just reload the event after deletion if I had the endpoint.
-        // Let's modify this to use saveEventoDificultad logic or similar?
-        // Wait, I didn't implement deleteEventoDificultad in service.
-        
-        // I will just use saveEvento for now as it was before, but adapting to Observable.
         if (this.evento && this.evento.evento_dificultad) {
             this.evento.evento_dificultad = this.evento.evento_dificultad.filter(val => val.id !== eventoDificultad.id);
             this.eventoService.saveEvento(this.evento).subscribe({
                 next: () => {
                     this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad eliminada', life: 3000 });
-                    this.loadEvento();
+                    this.loadDificultadesPorEvento(); // Refresh list
                 },
                 error: () => {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar dificultad' });
@@ -154,7 +161,7 @@ export class EventosDificultadesComponent implements OnInit {
               this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
               this.difficultyDialog = false;
               this.eventoDificultad = this.createEmptyEventoDificultad();
-              this.loadEvento();
+              this.loadDificultadesPorEvento(); // Refresh list only
           },
           error: (err) => {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar dificultad' });

@@ -57,6 +57,11 @@ export class EventoService {
 
   // Evento Dificultades (Nested)
   
+  getEventosDificultadesByEventoId(eventoId: number): Observable<EventoDificultad[]> {
+    return this.http.get<ApiResponse<EventoDificultad[]>>(`${this.apiUrl}/evento-dificultad/${eventoId}`)
+      .pipe(map(res => res.response));
+  }
+
   getEventoDificultad(eventoId: number, dificultadId: number): Observable<EventoDificultad> {
     return this.http.get<ApiResponse<EventoDificultad>>(`${this.apiUrl}/eventos/${eventoId}/dificultades/${dificultadId}`)
       .pipe(map(res => res.response));
