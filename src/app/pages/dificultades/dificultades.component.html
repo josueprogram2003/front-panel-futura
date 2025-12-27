@@ -1,3 +1,4 @@
+<app-loading-overlay [loading]="loading" [message]="message"></app-loading-overlay>
 <div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-4rem)] flex flex-col">
     <p-toast></p-toast>
     <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
@@ -25,7 +26,6 @@
         </div>
 
         <div class="flex-1 overflow-hidden relative">
-            <app-loading-overlay [loading]="loading"></app-loading-overlay>
             <p-table 
                 [value]="dificultades" 
                 [rows]="10" 
@@ -93,7 +93,6 @@
         styleClass="p-fluid">
         <ng-template pTemplate="content">
             <div class="relative" [formGroup]="dificultadForm">
-                <app-loading-overlay [loading]="loading" message="Guardando..."></app-loading-overlay>
                 <div class="field mb-4">
                     <label for="nombre" class="font-semibold block mb-2">Nombre</label>
                     <input type="text" class="w-full" pInputText id="nombre" formControlName="nombre" required autofocus />

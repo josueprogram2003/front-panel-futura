@@ -33,7 +33,7 @@ import { LoadingOverlayComponent } from '../../shared/components/loading-overlay
 export class DificultadesComponent implements OnInit {
   dificultades: Dificultad[] = [];
   dificultadForm: FormGroup;
-  
+  message:string=''
   dificultadDialog: boolean = false;
   submitted: boolean = false;
   loading: boolean = false;
@@ -57,6 +57,7 @@ export class DificultadesComponent implements OnInit {
   async loadDificultades() {
     this.loading = true;
     try {
+      this.message = "Cargando dificultades.."
       const res = await firstValueFrom(this.eventoService.getDificultades());
       this.dificultades = res.response;
     } catch (err) {
@@ -82,7 +83,6 @@ export class DificultadesComponent implements OnInit {
   }
 
   deleteDificultad(dificultad: Dificultad) {
-    console.log("11")
     this.confirmationService.confirm({
       key: 'dificultadesConfirm',
       message: '¿Estás seguro de que deseas eliminar ' + dificultad.nombre + '?',
@@ -90,6 +90,7 @@ export class DificultadesComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: async () => {
         this.loading = true;
+        this.message = "Eliminando dificultad..."
         try {
           await firstValueFrom(this.eventoService.deleteDificultad(dificultad.id));
           this.loadDificultades();
@@ -121,6 +122,7 @@ export class DificultadesComponent implements OnInit {
         accept: async () => {
           this.loading = true;
           try {
+            this.message = "Guardando dificultad..."
             await firstValueFrom(this.eventoService.saveDificultad(formValue));
             this.loadDificultades();
             this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
