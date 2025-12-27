@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TabViewModule } from 'primeng/tabview';
@@ -30,9 +30,9 @@ import { ConfiguracionService } from '../../core/services/configuracion.service'
   providers: [MessageService],
   templateUrl: './configuracion.component.html'
 })
-export class ConfiguracionComponent {
+export class ConfiguracionComponent implements OnInit {
   config: Configuracion = {
-    id: 1,
+    id: 0,
     isActive: true,
     isActiveImpresora: true,
     text_color_pregunta: "#2A64E1",
@@ -48,6 +48,36 @@ export class ConfiguracionComponent {
     private messageService: MessageService,
     private configuracionService: ConfiguracionService
   ) {}
+
+  ngOnInit() {
+    this.loadConfig();
+  }
+
+  loadConfig() {
+    this.loading = true;
+    this.configuracionService.getConfiguracion().subscribe({
+      next: (res) => {
+        if (res.response) {
+            const responseData = res.response as any;
+            this.config = {
+                ...res.response,
+                isActive: responseData.isActive === 1 || responseData.isActive === '1' || responseData.isActive === true,
+                isActiveImpresora: responseData.isActiveImpresora === 1 || responseData.isActiveImpresora === '1' || responseData.isActiveImpresora === true
+            };
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Error al cargar configuración:', err);
+        this.messageService.add({ 
+            severity: 'error', 
+            summary: 'Error', 
+            detail: 'Error al cargar la configuración' 
+        });
+      }
+    });
+  }
 
   saveConfig() {
     this.loading = true;
@@ -70,12 +100,12 @@ export class ConfiguracionComponent {
       trivia: this.configuracionService.updateTriviaConfig(triviaPayload)
     }).subscribe({
       next: () => {
-        this.loading = false;
         this.messageService.add({ 
             severity: 'success', 
             summary: 'Éxito', 
             detail: 'Configuración actualizada correctamente' 
         });
+        this.loadConfig();
       },
       error: (err) => {
         this.loading = false;

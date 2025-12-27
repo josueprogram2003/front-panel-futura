@@ -229,14 +229,9 @@ export class EventosPreguntasComponent implements OnInit {
                     console.log('Bulk insert response:', res);
                     const savedQuestions = res.response;
 
-                    if (!this.eventoDificultad!.preguntas) {
-                        this.eventoDificultad!.preguntas = [];
-                    }
-                    
                     // Add new questions to local list if returned
                     if (savedQuestions && Array.isArray(savedQuestions)) {
-                         this.eventoDificultad!.preguntas.push(...savedQuestions);
-                         this.preguntas = [...(this.eventoDificultad?.preguntas || [])];
+                         this.preguntas = [...this.preguntas, ...savedQuestions];
                     }
                 }
                 
