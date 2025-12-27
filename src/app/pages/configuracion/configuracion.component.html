@@ -9,7 +9,7 @@
     <p-tabView styleClass="w-full">
         <!-- Tab: Totem Fotográfico -->
         <p-tabPanel header="Totem Fotográfico" leftIcon="pi pi-camera">
-            <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 mt-4">
+            <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 mt-4">                
                 <div class="flex items-center justify-between">
                     <div>
                         <label class="font-bold text-slate-700 block mb-1">Impresora Activa</label>
@@ -66,47 +66,14 @@
                     </div>
                 </div>
 
-                <!-- Reglas del Juego -->
-                <div class="col-span-1 md:col-span-2 mt-4">
-                    <h3 class="text-lg font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100">Reglas del Juego</h3>
-                </div>
-
-                <!-- Preguntas por Ronda -->
+                <!-- Color Numeración -->
                 <div class="field">
-                    <label class="font-semibold block mb-2 text-slate-700">Preguntas por Ronda</label>
-                    <p-inputnumber 
-                        [(ngModel)]="config.preguntas_por_ronda" 
-                        [showButtons]="true" 
-                        buttonLayout="horizontal" 
-                        inputId="horizontal" 
-                        spinnerMode="horizontal" 
-                        [step]="1" 
-                        [min]="1" 
-                        [max]="20"
-                        decrementButtonClass="p-button-secondary" 
-                        incrementButtonClass="p-button-secondary" 
-                        incrementButtonIcon="pi pi-plus" 
-                        decrementButtonIcon="pi pi-minus">
-                    </p-inputnumber>
-                </div>
-
-                <!-- Preguntas para Ganar -->
-                <div class="field">
-                    <label class="font-semibold block mb-2 text-slate-700">Preguntas para Ganar</label>
-                    <p-inputnumber 
-                        [(ngModel)]="config.preguntas_para_ganar" 
-                        [showButtons]="true" 
-                        buttonLayout="horizontal" 
-                        inputId="horizontal" 
-                        spinnerMode="horizontal" 
-                        [step]="1" 
-                        [min]="1" 
-                        [max]="config.preguntas_por_ronda"
-                        decrementButtonClass="p-button-secondary" 
-                        incrementButtonClass="p-button-secondary" 
-                        incrementButtonIcon="pi pi-plus" 
-                        decrementButtonIcon="pi pi-minus">
-                    </p-inputnumber>
+                    <label class="font-semibold block mb-2 text-slate-700">Color Numeración</label>
+                    <div class="flex items-center gap-3">
+                        <p-colorpicker [(ngModel)]="config.color_numeracion" [inline]="false"></p-colorpicker>
+                        <input type="text" pInputText [(ngModel)]="config.color_numeracion" class="w-32" />
+                        <div [style.background]="config.color_numeracion" class="w-8 h-8 rounded border border-slate-300"></div>
+                    </div>
                 </div>
             </div>
         </p-tabPanel>
