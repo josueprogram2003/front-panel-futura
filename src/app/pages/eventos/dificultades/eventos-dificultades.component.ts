@@ -44,6 +44,7 @@ export class EventosDificultadesComponent implements OnInit {
   loading: boolean = false;
   message: string = '';
   selectedDifficulty: Dificultad | undefined;
+  currentEventoDificultadId: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -105,27 +106,35 @@ export class EventosDificultadesComponent implements OnInit {
   openNewDifficulty() {
     this.submitted = false;
     this.selectedDifficulty = undefined;
+    this.currentEventoDificultadId = 0;
     this.difficultyDialog = true;
   }
 
-  editDifficulty(eventoDificultad: EventoDificultad) {
-    
+  editDifficulty(eventoDificultad: EventoDificultadList) {
+    this.currentEventoDificultadId = eventoDificultad.id;
+    if (eventoDificultad.dificultad) {
+      this.selectedDifficulty = this.dificultades.find(d => d.id === eventoDificultad.dificultad.id);
+    }
+    this.difficultyDialog = true;
   }
 
-  deleteDifficulty(eventoDificultad: EventoDificultad) {
+  deleteDifficulty(eventoDificultad: EventoDificultadList) {
     this.confirmationService.confirm({
       message: '¿Estás seguro de eliminar esta dificultad y todas sus preguntas?',
       header: 'Confirmar',
       icon: 'pi pi-exclamation-triangle',
       accept: async () => {
-        if (this.evento && this.evento.evento_dificultad) {
-            this.evento.evento_dificultad = this.evento.evento_dificultad.filter(val => val.id !== eventoDificultad.id);
+        if (eventoDificultad.id) {
+            this.loading = true;
+            this.message = 'Eliminando dificultad...';
             try {
-                await firstValueFrom(this.eventoService.saveEvento(this.evento));
+                await firstValueFrom(this.eventoService.deleteEventoDificultad(eventoDificultad.id));
                 this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad eliminada', life: 3000 });
                 await this.loadDificultadByEventoId(this.eventoId); // Refresh list
             } catch (err) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar dificultad' });
+            } finally {
+                this.loading = false;
             }
         }
       }
@@ -142,6 +151,7 @@ export class EventosDificultadesComponent implements OnInit {
 
     if (this.selectedDifficulty) {
       const payload: EventoDificultad = {
+        id: this.currentEventoDificultadId !== 0 ? this.currentEventoDificultadId : undefined,
         evento_id: this.eventoId,
         dificultad_id: this.selectedDifficulty.id,
         isActive: true
@@ -149,7 +159,7 @@ export class EventosDificultadesComponent implements OnInit {
 
       this.loading = true;
       try {
-          await firstValueFrom(this.eventoService.saveEventoDificultad(this.eventoId, payload));
+          await firstValueFrom(this.eventoService.saveEventoDificultad(payload));
           this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
           this.difficultyDialog = false;
           await this.loadDificultadByEventoId(this.eventoId);

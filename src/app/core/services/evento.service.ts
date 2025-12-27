@@ -59,11 +59,15 @@ export class EventoService {
     return this.http.get<ApiResponse<EventoDificultad>>(`${this.apiUrl}/eventos/${eventoId}/dificultades/${dificultadId}`);
   }
 
-  saveEventoDificultad(eventoId: number, eventoDificultad: EventoDificultad): Observable<ApiResponse<EventoDificultad>> {
+  saveEventoDificultad(eventoDificultad: EventoDificultad): Observable<ApiResponse<EventoDificultad>> {
       if (eventoDificultad.id && eventoDificultad.id !== 0) {
-          return this.http.put<ApiResponse<EventoDificultad>>(`${this.apiUrl}/eventos/${eventoId}/dificultades/${eventoDificultad.id}`, eventoDificultad);
+          return this.http.put<ApiResponse<EventoDificultad>>(`${this.apiUrl}/evento-dificultad/${eventoDificultad.id}`, eventoDificultad);
       }
       return this.http.post<ApiResponse<EventoDificultad>>(`${this.apiUrl}/evento-dificultad`, eventoDificultad);
+  }
+
+  deleteEventoDificultad(id: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/evento-dificultad/${id}`);
   }
 
   createId(): number {

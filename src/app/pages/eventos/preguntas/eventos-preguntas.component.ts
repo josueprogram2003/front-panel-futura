@@ -174,7 +174,7 @@ export class EventosPreguntasComponent implements OnInit {
   async saveChanges() {
     if (this.eventoDificultad && this.evento) {
         try {
-            await firstValueFrom(this.eventoService.saveEventoDificultad(this.eventoId, this.eventoDificultad));
+            await firstValueFrom(this.eventoService.saveEventoDificultad(this.eventoDificultad));
         } catch (err) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar cambios' });
         }
