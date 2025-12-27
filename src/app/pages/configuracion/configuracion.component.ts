@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TabViewModule } from 'primeng/tabview';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { InputTextModule } from 'primeng/inputtext';
@@ -16,6 +17,7 @@ import { Configuracion } from '../../core/models';
   imports: [
     CommonModule,
     FormsModule,
+    TabViewModule,
     ToggleSwitchModule,
     ColorPickerModule,
     InputTextModule,
