@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { Evento, EventoDificultad, Dificultad, ApiResponse, EventoDificultadList } from '../models';
+import { Evento, EventoDificultad, Dificultad, ApiResponse, EventoDificultadList, Pregunta } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -55,8 +55,9 @@ export class EventoService {
     return this.http.get<ApiResponse<EventoDificultadList[]>>(`${this.apiUrl}/evento-dificultad/${eventoId}`);
   }
 
-  getEventoDificultad(eventoId: number, dificultadId: number): Observable<ApiResponse<EventoDificultad>> {
-    return this.http.get<ApiResponse<EventoDificultad>>(`${this.apiUrl}/eventos/${eventoId}/dificultades/${dificultadId}`);
+
+  getEventosDificultadesPreguntasByEventoDificultadId(eventoDificultadId: number): Observable<ApiResponse<Pregunta[]>> {
+    return this.http.get<ApiResponse<Pregunta[]>>(`${this.apiUrl}/evento-dificultad/${eventoDificultadId}/preguntas`);
   }
 
   saveEventoDificultad(eventoDificultad: EventoDificultad): Observable<ApiResponse<EventoDificultad>> {
@@ -68,6 +69,10 @@ export class EventoService {
 
   deleteEventoDificultad(id: number): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/evento-dificultad/${id}`);
+  }
+
+  getPreguntasByEventoDificultadId(id: number): Observable<ApiResponse<EventoDificultad>> {
+    return this.http.get<ApiResponse<EventoDificultad>>(`${this.apiUrl}/evento-dificultad/${id}/preguntas`);
   }
 
   createId(): number {

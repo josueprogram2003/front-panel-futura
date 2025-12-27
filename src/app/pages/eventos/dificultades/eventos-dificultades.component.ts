@@ -120,8 +120,9 @@ export class EventosDificultadesComponent implements OnInit {
 
   deleteDifficulty(eventoDificultad: EventoDificultadList) {
     this.confirmationService.confirm({
+      key: 'eventosDificultadesConfirm',
       message: '¿Estás seguro de eliminar esta dificultad y todas sus preguntas?',
-      header: 'Confirmar',
+      header: 'Confirmar Eliminación',
       icon: 'pi pi-exclamation-triangle',
       accept: async () => {
         if (eventoDificultad.id) {

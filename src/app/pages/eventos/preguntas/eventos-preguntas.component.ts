@@ -40,14 +40,15 @@ import { LoadingOverlayComponent } from '../../../shared/components/loading-over
 })
 export class EventosPreguntasComponent implements OnInit {
   eventoId!: number;
-  dificultadId!: number;
+  dificultadEventoId!: number;
   evento: Evento | undefined;
   eventoDificultad: EventoDificultad | undefined;
-  
+  preguntas: Pregunta[] = [];
   questionDialog: boolean = false;
   pregunta: Pregunta = this.createEmptyQuestion();
   submitted: boolean = false;
   loading: boolean = false;
+  message: string = '';
 
   tiposPregunta = [
     { label: 'Alternativa Múltiple', value: 'alternativa' },
@@ -69,7 +70,7 @@ export class EventosPreguntasComponent implements OnInit {
       
       if (eId && dId) {
         this.eventoId = +eId;
-        this.dificultadId = +dId;
+        this.dificultadEventoId = +dId;
         this.loadData();
       }
     });
@@ -78,25 +79,17 @@ export class EventosPreguntasComponent implements OnInit {
   async loadData() {
     this.loading = true;
     try {
-      const [resEvento, resEventoDificultad] = await firstValueFrom(forkJoin([
+      const [resEvento, resPreguntas] = await firstValueFrom(forkJoin([
         this.eventoService.getEventoById(this.eventoId),
-        this.eventoService.getEventoDificultad(this.eventoId, this.dificultadId)
+        this.eventoService.getEventosDificultadesPreguntasByEventoDificultadId(this.dificultadEventoId)
       ]));
-
       this.evento = resEvento.response;
+      this.preguntas = resPreguntas.response;
       if (!this.evento) {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Evento no encontrado' });
         this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
         return;
       }
-
-      this.eventoDificultad = resEventoDificultad.response;
-      if (!this.eventoDificultad) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Dificultad no encontrada' });
-        this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
-        return;
-      }
-
       this.loading = false;
     } catch (err) {
       this.loading = false;
@@ -117,26 +110,27 @@ export class EventosPreguntasComponent implements OnInit {
     this.questionDialog = true;
   }
 
-  // deleteQuestion(pregunta: Pregunta) {
-  //   this.confirmationService.confirm({
-  //     message: '¿Estás seguro de eliminar esta pregunta?',
-  //     header: 'Confirmar',
-  //     icon: 'pi pi-exclamation-triangle',
-  //     accept: async () => {
-  //       if (this.eventoDificultad && this.eventoDificultad.preguntas) {
-  //         const previousPreguntas = [...this.eventoDificultad.preguntas];
-  //         this.eventoDificultad.preguntas = this.eventoDificultad.preguntas.filter(val => val.id !== pregunta.id);
+  deleteQuestion(pregunta: Pregunta) {
+    this.confirmationService.confirm({
+      key: 'eventosPreguntasConfirm',
+      message: '¿Estás seguro de eliminar esta pregunta?',
+      header: 'Confirmar Eliminación',
+      icon: 'pi pi-exclamation-triangle',
+      accept: async () => {
+        if (this.eventoDificultad && this.eventoDificultad.preguntas) {
+          const previousPreguntas = [...this.eventoDificultad.preguntas];
+          this.eventoDificultad.preguntas = this.eventoDificultad.preguntas.filter(val => val.id !== pregunta.id);
           
-  //         try {
-  //           await this.saveChanges();
-  //           this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta eliminada', life: 3000 });
-  //         } catch (error) {
-  //           this.eventoDificultad.preguntas = previousPreguntas;
-  //         }
-  //       }
-  //     }
-  //   });
-  // }
+          try {
+            await this.saveChanges();
+            this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta eliminada', life: 3000 });
+          } catch (error) {
+            this.eventoDificultad.preguntas = previousPreguntas;
+          }
+        }
+      }
+    });
+  }
 
   hideDialog() {
     this.questionDialog = false;
@@ -146,46 +140,46 @@ export class EventosPreguntasComponent implements OnInit {
   saveQuestion() {
     this.submitted = true;
 
-    // if (this.pregunta.pregunta?.trim() && this.eventoDificultad) {
-    //   const isEdit = this.pregunta.id !== 0;
+    if (this.pregunta.pregunta?.trim() && this.eventoDificultad) {
+      const isEdit = this.pregunta.id !== 0;
       
-    //   this.confirmationService.confirm({
-    //     key: 'eventosPreguntasConfirm',
-    //     message: isEdit ? '¿Estás seguro de actualizar esta pregunta?' : '¿Estás seguro de crear esta pregunta?',
-    //     header: isEdit ? 'Confirmar Edición' : 'Confirmar Creación',
-    //     icon: 'pi pi-exclamation-triangle',
-    //     accept: async () => {
-    //         if (!this.eventoDificultad!.preguntas) {
-    //             this.eventoDificultad!.preguntas = [];
-    //         }
+      this.confirmationService.confirm({
+        key: 'eventosPreguntasConfirm',
+        message: isEdit ? '¿Estás seguro de actualizar esta pregunta?' : '¿Estás seguro de crear esta pregunta?',
+        header: isEdit ? 'Confirmar Edición' : 'Confirmar Creación',
+        icon: 'pi pi-exclamation-triangle',
+        accept: async () => {
+            if (!this.eventoDificultad!.preguntas) {
+                this.eventoDificultad!.preguntas = [];
+            }
 
-    //         if (this.pregunta.id) {
-    //             const index = this.eventoDificultad!.preguntas.findIndex(q => q.id === this.pregunta.id);
-    //             if (index !== -1) {
-    //                 this.eventoDificultad!.preguntas[index] = this.pregunta;
-    //             }
-    //         } else {
-    //             this.pregunta.id = this.eventoService.createId();
-    //             this.pregunta.evento_dificultad_id = this.eventoDificultad!.id;
-    //             this.eventoDificultad!.preguntas.push(this.pregunta);
-    //         }
+            if (this.pregunta.id) {
+                const index = this.eventoDificultad!.preguntas.findIndex(q => q.id === this.pregunta.id);
+                if (index !== -1) {
+                    this.eventoDificultad!.preguntas[index] = this.pregunta;
+                }
+            } else {
+                this.pregunta.id = this.eventoService.createId();
+                this.pregunta.evento_dificultad_id = this.eventoDificultad!.id!;
+                this.eventoDificultad!.preguntas.push(this.pregunta);
+            }
 
-    //         this.loading = true;
-    //         this.message = isEdit ? 'Actualizando pregunta...' : 'Guardando pregunta...';
+            this.loading = true;
+            this.message = isEdit ? 'Actualizando pregunta...' : 'Guardando pregunta...';
             
-    //         try {
-    //             await this.saveChanges();
-    //             this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: isEdit ? 'Pregunta actualizada' : 'Pregunta creada', life: 3000 });
-    //             this.questionDialog = false;
-    //             this.pregunta = this.createEmptyQuestion();
-    //         } catch (error) {
-    //             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar pregunta' });
-    //         } finally {
-    //             this.loading = false;
-    //         }
-    //     }
-    //   });
-    // }
+            try {
+                await this.saveChanges();
+                this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: isEdit ? 'Pregunta actualizada' : 'Pregunta creada', life: 3000 });
+                this.questionDialog = false;
+                this.pregunta = this.createEmptyQuestion();
+            } catch (error) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar pregunta' });
+            } finally {
+                this.loading = false;
+            }
+        }
+      });
+    }
   }
 
   async saveChanges() {
@@ -252,7 +246,7 @@ export class EventosPreguntasComponent implements OnInit {
   createEmptyQuestion(): Pregunta {
     return {
       id: 0,
-      evento_dificultad_id: this.dificultadId,
+      evento_dificultad_id: this.dificultadEventoId,
       tipo: 'alternativa',
       pregunta: '',
       isActive: true,
