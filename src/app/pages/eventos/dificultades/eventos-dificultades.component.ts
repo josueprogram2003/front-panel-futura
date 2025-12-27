@@ -37,7 +37,8 @@ import { LoadingOverlayComponent } from '../../../shared/components/loading-over
 export class EventosDificultadesComponent implements OnInit {
   eventoId!: number;
   evento: Evento | undefined;
-  dificultades: EventoDificultadList[] = [];
+  dificultadesEventos: EventoDificultadList[] = [];
+  dificultades:Dificultad[] = []
   difficultyDialog: boolean = false;
   submitted: boolean = false;
   loading: boolean = false;
@@ -56,6 +57,8 @@ export class EventosDificultadesComponent implements OnInit {
       if (id) {
         this.eventoId = Number(id);
         await this.loadDificultadByEventoId(this.eventoId || 0);
+        await this.getEvento(this.eventoId || 0)
+        await this.getDificultades()
       }
     });
   }
@@ -63,9 +66,31 @@ export class EventosDificultadesComponent implements OnInit {
   async loadDificultadByEventoId(evento_id:number){
     try {
       const res = await firstValueFrom(this.eventoService.getEventosDificultadesByEventoId(evento_id));
-      this.dificultades = res.response;
+      this.dificultadesEventos = res.response;
     } catch (err) {
       console.error(err);
+    }
+  }
+
+  async getEvento(evento_id:number){
+    try {
+      const resp = await firstValueFrom(this.eventoService.getEventoById(evento_id))
+      if (resp.status == 200) {
+        this.evento = resp.response;
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async getDificultades(){
+    try {
+      const resp = await firstValueFrom(this.eventoService.getDificultades())
+      if (resp.status == 200) {
+        this.dificultades = resp.response;
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
