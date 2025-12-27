@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { forkJoin, firstValueFrom } from 'rxjs';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -74,38 +75,35 @@ export class EventosPreguntasComponent implements OnInit {
     });
   }
 
-  loadData() {
+  async loadData() {
     this.loading = true;
-    this.eventoService.getEventoById(this.eventoId).subscribe({
-      next: (data) => {
-        this.evento = data;
-        if (!this.evento) {
-           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Evento no encontrado' });
-           this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
-        }
-      },
-      error: (err) => {
-         this.loading = false;
-         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar evento' });
-         this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
-      }
-    });
+    try {
+      const [resEvento, resEventoDificultad] = await firstValueFrom(forkJoin([
+        this.eventoService.getEventoById(this.eventoId),
+        this.eventoService.getEventoDificultad(this.eventoId, this.dificultadId)
+      ]));
 
-    this.eventoService.getEventoDificultad(this.eventoId, this.dificultadId).subscribe({
-      next: (data) => {
-        this.eventoDificultad = data;
-        this.loading = false;
-        if (!this.eventoDificultad) {
-           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Dificultad no encontrada' });
-           this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
-        }
-      },
-      error: (err) => {
-         this.loading = false;
-         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar dificultad' });
-         this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
+      this.evento = resEvento.response;
+      if (!this.evento) {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Evento no encontrado' });
+        this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
+        return;
       }
-    });
+
+      this.eventoDificultad = resEventoDificultad.response;
+      if (!this.eventoDificultad) {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Dificultad no encontrada' });
+        this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
+        return;
+      }
+
+      this.loading = false;
+    } catch (err) {
+      this.loading = false;
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar datos' });
+      this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
+      console.error(err);
+    }
   }
 
   openNewQuestion() {
@@ -119,65 +117,67 @@ export class EventosPreguntasComponent implements OnInit {
     this.questionDialog = true;
   }
 
-  deleteQuestion(pregunta: Pregunta) {
-    this.confirmationService.confirm({
-      message: '¿Estás seguro de eliminar esta pregunta?',
-      header: 'Confirmar',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        if (this.eventoDificultad && this.eventoDificultad.preguntas) {
-          this.eventoDificultad.preguntas = this.eventoDificultad.preguntas.filter(val => val.id !== pregunta.id);
-          this.saveChanges();
-          this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta eliminada', life: 3000 });
-        }
-      }
-    });
-  }
+  // deleteQuestion(pregunta: Pregunta) {
+  //   this.confirmationService.confirm({
+  //     message: '¿Estás seguro de eliminar esta pregunta?',
+  //     header: 'Confirmar',
+  //     icon: 'pi pi-exclamation-triangle',
+  //     accept: async () => {
+  //       if (this.eventoDificultad && this.eventoDificultad.preguntas) {
+  //         const previousPreguntas = [...this.eventoDificultad.preguntas];
+  //         this.eventoDificultad.preguntas = this.eventoDificultad.preguntas.filter(val => val.id !== pregunta.id);
+          
+  //         try {
+  //           await this.saveChanges();
+  //           this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta eliminada', life: 3000 });
+  //         } catch (error) {
+  //           this.eventoDificultad.preguntas = previousPreguntas;
+  //         }
+  //       }
+  //     }
+  //   });
+  // }
 
   hideDialog() {
     this.questionDialog = false;
     this.submitted = false;
   }
 
-  saveQuestion() {
-    this.submitted = true;
+  // saveQuestion() {
+  //   this.submitted = true;
 
-    if (this.pregunta.pregunta?.trim() && this.eventoDificultad) {
-      if (!this.eventoDificultad.preguntas) {
-        this.eventoDificultad.preguntas = [];
-      }
+  //   if (this.pregunta.pregunta?.trim() && this.eventoDificultad) {
+  //     if (!this.eventoDificultad.preguntas) {
+  //       this.eventoDificultad.preguntas = [];
+  //     }
 
-      if (this.pregunta.id) {
-        const index = this.eventoDificultad.preguntas.findIndex(q => q.id === this.pregunta.id);
-        if (index !== -1) {
-            this.eventoDificultad.preguntas[index] = this.pregunta;
-            this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta actualizada', life: 3000 });
-        }
-      } else {
-        // ID generation should be handled by backend usually, but for nested object update we might need it or backend ignores 0
-        this.pregunta.id = this.eventoService.createId();
-        this.pregunta.evento_dificultad_id = this.eventoDificultad.id;
-        this.eventoDificultad.preguntas.push(this.pregunta);
-        this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta creada', life: 3000 });
-      }
+  //     if (this.pregunta.id) {
+  //       const index = this.eventoDificultad.preguntas.findIndex(q => q.id === this.pregunta.id);
+  //       if (index !== -1) {
+  //           this.eventoDificultad.preguntas[index] = this.pregunta;
+  //           this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta actualizada', life: 3000 });
+  //       }
+  //     } else {
+  //       // ID generation should be handled by backend usually, but for nested object update we might need it or backend ignores 0
+  //       this.pregunta.id = this.eventoService.createId();
+  //       this.pregunta.evento_dificultad_id = this.eventoDificultad.id;
+  //       this.eventoDificultad.preguntas.push(this.pregunta);
+  //       this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta creada', life: 3000 });
+  //     }
 
-      this.saveChanges();
-      this.questionDialog = false;
-      this.pregunta = this.createEmptyQuestion();
-    }
-  }
+  //     this.saveChanges();
+  //     this.questionDialog = false;
+  //     this.pregunta = this.createEmptyQuestion();
+  //   }
+  // }
 
-  saveChanges() {
+  async saveChanges() {
     if (this.eventoDificultad && this.evento) {
-        // Assuming we save the whole EventoDificultad structure which includes questions
-        this.eventoService.saveEventoDificultad(this.eventoId, this.eventoDificultad).subscribe({
-            next: () => {
-                // Success, maybe reload data or just keep as is
-            },
-            error: (err) => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar cambios' });
-            }
-        });
+        try {
+            await firstValueFrom(this.eventoService.saveEventoDificultad(this.eventoId, this.eventoDificultad));
+        } catch (err) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar cambios' });
+        }
     }
   }
 

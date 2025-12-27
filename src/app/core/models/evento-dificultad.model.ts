@@ -1,13 +1,16 @@
 import { Dificultad } from './dificultad.model';
-import { Pregunta } from './pregunta.model';
+import { Evento } from './evento.model';
 
 export interface EventoDificultad {
-  id: number;
+  id?: number;
   evento_id: number;
   dificultad_id: number;
   isActive: boolean;
+}
 
-  // Navigation properties
-  dificultad?: Dificultad;
-  preguntas?: Pregunta[];
+export interface EventoDificultadList {
+  id: number;
+  evento: Evento;
+  dificultad: Dificultad;
+  cantidad_preguntas:number;
 }

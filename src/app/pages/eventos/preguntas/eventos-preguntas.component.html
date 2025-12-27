@@ -1,9 +1,7 @@
-<div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-4rem)] flex flex-col">
+<!-- <div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-4rem)] flex flex-col">
     <p-toast></p-toast>
     <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
-
     <div *ngIf="evento && eventoDificultad" class="fade-in flex flex-col h-full">
-        <!-- Professional Header -->
         <div class="flex-none flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
             <div>
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-2">
@@ -87,7 +85,7 @@
                                     [text]="true" 
                                     severity="danger" 
                                     (onClick)="deleteQuestion(pregunta)">
-                                </p-button>
+                                </p-button> 
                             </div>
                         </td>
                     </tr>
@@ -102,7 +100,6 @@
         </div>
     </div>
 
-    <!-- QUESTION DIALOG -->
     <p-dialog 
         [(visible)]="questionDialog" 
         [style]="{ width: '800px' }" 
@@ -144,7 +141,7 @@
 
         <ng-template pTemplate="footer">
             <p-button label="Cancelar" icon="pi pi-times" [text]="true" (onClick)="hideDialog()"></p-button>
-            <p-button label="Guardar" icon="pi pi-check" [text]="true" (onClick)="saveQuestion()"></p-button>
+            <p-button label="Guardar" icon="pi pi-check" [text]="true" (onClick)="null"></p-button>
         </ng-template>
     </p-dialog>
-</div>
+</div> -->

@@ -35,7 +35,7 @@
         <div class="flex-1 overflow-hidden relative">
             <app-loading-overlay [loading]="loading"></app-loading-overlay>
             <p-table 
-                [value]="evento.evento_dificultad || []" 
+                [value]="dificultades" 
                 [rows]="10" 
                 [paginator]="true" 
                 [rowHover]="true"
@@ -55,7 +55,7 @@
             
             <ng-template pTemplate="body" let-ed>
                 <tr>
-                    <td class="text-slate-500">#{{ ed.dificultad?.id }}</td>
+                    <td class="text-slate-500">#{{ ed.id }}</td>
                     <td class="font-medium text-slate-800">{{ ed.dificultad?.nombre }}</td>
                     <td>
                         <span class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">
@@ -105,7 +105,7 @@
     </div>
 
     <!-- DIFFICULTY DIALOG -->
-    <p-dialog 
+    <!-- <p-dialog 
         [(visible)]="difficultyDialog" 
         [style]="{ width: '450px' }" 
         header="Detalles de la Dificultad" 
@@ -132,5 +132,5 @@
             <p-button label="Cancelar" icon="pi pi-times" [text]="true" (onClick)="hideDialog()"></p-button>
             <p-button label="Guardar" icon="pi pi-check" [text]="true" (onClick)="saveDifficulty()"></p-button>
         </ng-template>
-    </p-dialog>
+    </p-dialog> -->
 </div>

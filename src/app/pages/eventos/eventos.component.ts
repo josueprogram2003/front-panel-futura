@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -74,19 +75,17 @@ export class EventosComponent implements OnInit {
     this.loadEventos();
   }
 
-  loadEventos() {
+  async loadEventos() {
     this.loading = true;
-    this.eventoService.getEventos().subscribe({
-      next: (data) => {
-        this.eventos = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar eventos' });
-        console.error(err);
-        this.loading = false;
-      }
-    });
+    try {
+      const res = await firstValueFrom(this.eventoService.getEventos());
+      this.eventos = res.response;
+      this.loading = false;
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar eventos' });
+      console.error(error);
+      this.loading = false;
+    }
   }
 
   manageDifficulties(evento: Evento) {
@@ -104,7 +103,7 @@ export class EventosComponent implements OnInit {
     this.eventDialog = true;
   }
 
-  editEvent(evento: Evento) {
+  async editEvent(evento: Evento) {
     // 1. Cargar datos de la fila inmediatamente
     const data = { ...evento };
     if (data.fecha) {
@@ -119,27 +118,27 @@ export class EventosComponent implements OnInit {
 
     // 2. Actualizar con datos frescos del servidor
     this.loading = true;
-    this.eventoService.getEventoById(evento.id).subscribe({
-      next: (freshData) => {
-        if (freshData.fecha) {
-          try {
-            freshData.fecha = new Date(freshData.fecha).toISOString().split('T')[0];
-          } catch (e) {
-            console.error('Error parsing date', e);
-          }
+    try {
+      const res = await firstValueFrom(this.eventoService.getEventoById(evento.id));
+      const freshData = res.response;
+
+      if (freshData.fecha) {
+        try {
+          freshData.fecha = new Date(freshData.fecha).toISOString().split('T')[0];
+        } catch (e) {
+          console.error('Error parsing date', e);
         }
-        // Solo actualizar si el formulario no ha sido modificado por el usuario aún
-        if (!this.eventForm.dirty) {
-            this.eventForm.patchValue(freshData);
-        }
-        this.loading = false;
-      },
-      error: (err) => {
-        this.loading = false;
-        console.error('Error refreshing event data', err);
-        // No mostramos error al usuario porque ya tiene los datos de la fila
       }
-    });
+      // Solo actualizar si el formulario no ha sido modificado por el usuario aún
+      if (!this.eventForm.dirty) {
+        this.eventForm.patchValue(freshData);
+      }
+      this.loading = false;
+    } catch (err) {
+      this.loading = false;
+      console.error('Error refreshing event data', err);
+      // No mostramos error al usuario porque ya tiene los datos de la fila
+    }
   }
 
   deleteEvent(evento: Evento) {
@@ -147,19 +146,17 @@ export class EventosComponent implements OnInit {
       message: '¿Estás seguro de eliminar este evento?',
       header: 'Confirmar Eliminación',
       icon: 'pi pi-exclamation-triangle',
-      accept: () => {
+      accept: async () => {
         this.loading = true;
-        this.eventoService.deleteEvento(evento.id).subscribe({
-          next: (res) => {
-            this.loading = false;
-            this.loadEventos(); // Refresh list
-            this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: res.message || 'Evento eliminado', life: 3000 });
-          },
-          error: (err) => {
-            this.loading = false;
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al eliminar evento' });
-          }
-        });
+        try {
+          const res = await firstValueFrom(this.eventoService.deleteEvento(evento.id));
+          this.loading = false;
+          this.loadEventos(); // Refresh list
+          this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: res.message || 'Evento eliminado', life: 3000 });
+        } catch (err: any) {
+          this.loading = false;
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al eliminar evento' });
+        }
       }
     });
   }
@@ -180,20 +177,18 @@ export class EventosComponent implements OnInit {
         message: isEditing ? '¿Estás seguro de que deseas actualizar este evento?' : '¿Estás seguro de que deseas guardar este evento?',
         header: isEditing ? 'Confirmar Actualización' : 'Confirmar Guardado',
         icon: 'pi pi-exclamation-triangle',
-        accept: () => {
+        accept: async () => {
           this.loading = true;
-          this.eventoService.saveEvento(eventoData).subscribe({
-            next: (res) => {
-              this.loading = false;
-              this.loadEventos(); // Refresh list
-              this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: res.message || (isEditing ? 'Evento actualizado correctamente' : 'Evento guardado correctamente'), life: 3000 });
-              this.eventDialog = false;
-            },
-            error: (err) => {
-              this.loading = false;
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al guardar evento' });
-            }
-          });
+          try {
+            const res = await firstValueFrom(this.eventoService.saveEvento(eventoData));
+            this.loading = false;
+            this.loadEventos(); // Refresh list
+            this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: res.message || (isEditing ? 'Evento actualizado correctamente' : 'Evento guardado correctamente'), life: 3000 });
+            this.eventDialog = false;
+          } catch (err: any) {
+            this.loading = false;
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al guardar evento' });
+          }
         }
       });
     }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -47,18 +48,16 @@ export class DificultadesComponent implements OnInit {
     this.loadDificultades();
   }
 
-  loadDificultades() {
+  async loadDificultades() {
     this.loading = true;
-    this.eventoService.getDificultades().subscribe({
-      next: (data) => {
-        this.dificultades = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.loading = false;
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar dificultades' });
-      }
-    });
+    try {
+      const res = await firstValueFrom(this.eventoService.getDificultades());
+      this.dificultades = res.response;
+      this.loading = false;
+    } catch (err) {
+      this.loading = false;
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar dificultades' });
+    }
   }
 
   openNewDificultad() {
@@ -77,35 +76,31 @@ export class DificultadesComponent implements OnInit {
       message: '¿Estás seguro de que deseas eliminar ' + dificultad.nombre + '?',
       header: 'Confirmar',
       icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.eventoService.deleteDificultad(dificultad.id).subscribe({
-          next: () => {
-            this.loadDificultades();
-            this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad eliminada', life: 3000 });
-          },
-          error: (err) => {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar dificultad' });
-          }
-        });
+      accept: async () => {
+        try {
+          await firstValueFrom(this.eventoService.deleteDificultad(dificultad.id));
+          this.loadDificultades();
+          this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad eliminada', life: 3000 });
+        } catch (err) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar dificultad' });
+        }
       }
     });
   }
 
-  saveDificultad() {
+  async saveDificultad() {
     this.submitted = true;
 
     if (this.dificultad.nombre?.trim()) {
-      this.eventoService.saveDificultad(this.dificultad).subscribe({
-        next: () => {
-          this.loadDificultades();
-          this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
-          this.dificultadDialog = false;
-          this.dificultad = this.createEmptyDificultad();
-        },
-        error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar dificultad' });
-        }
-      });
+      try {
+        await firstValueFrom(this.eventoService.saveDificultad(this.dificultad));
+        this.loadDificultades();
+        this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
+        this.dificultadDialog = false;
+        this.dificultad = this.createEmptyDificultad();
+      } catch (err) {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar dificultad' });
+      }
     }
   }
 
