@@ -42,6 +42,7 @@ export class EventosDificultadesComponent implements OnInit {
   difficultyDialog: boolean = false;
   submitted: boolean = false;
   loading: boolean = false;
+  message: string = '';
   selectedDifficulty: Dificultad | undefined;
 
   constructor(
@@ -57,9 +58,15 @@ export class EventosDificultadesComponent implements OnInit {
       const id = params.get('id');
       if (id) {
         this.eventoId = Number(id);
-        await this.getEvento(this.eventoId || 0);
-        await this.loadDificultadByEventoId(this.eventoId || 0);
-        await this.getDificultades();
+        this.loading = true;
+        this.message = 'Cargando información del evento...';
+        try {
+          await this.loadDificultadByEventoId(this.eventoId || 0);
+          await this.getEvento(this.eventoId || 0);
+          await this.getDificultades();
+        } finally {
+          this.loading = false;
+        }
       }
     });
   }
@@ -140,6 +147,7 @@ export class EventosDificultadesComponent implements OnInit {
         isActive: true
       };
 
+      this.loading = true;
       try {
           await firstValueFrom(this.eventoService.saveEventoDificultad(this.eventoId, payload));
           this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
@@ -148,6 +156,8 @@ export class EventosDificultadesComponent implements OnInit {
       } catch (err:any) {
           this.messageService.add({ severity: 'warn', summary: 'Error', detail: err.error.message });
           console.error(err);
+      } finally {
+        this.loading = false;
       }
     }
   }

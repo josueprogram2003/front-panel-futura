@@ -1,8 +1,7 @@
 <div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-4rem)] flex flex-col">
   <p-toast></p-toast>
-  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+  <p-confirmDialog key="eventosDificultadesConfirm" [style]="{ width: '450px' }"></p-confirmDialog>
 
-  @if (evento) {
   <div class="fade-in flex flex-col h-full">
     <div
       class="flex-none flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
@@ -107,5 +106,4 @@
         </ng-template>
     </p-dialog> 
   </div>
-  }
 </div>
