@@ -99,8 +99,13 @@ export class EventosDificultadesComponent implements OnInit {
     }
   }
 
-  manageQuestions(eventoDificultad: EventoDificultad) {
-    this.router.navigate(['/eventos', this.eventoId, 'dificultades', eventoDificultad.id, 'preguntas']);
+  manageQuestions(eventoDificultad: any) {
+    this.router.navigate(['/eventos', this.eventoId, 'dificultades', eventoDificultad.id, 'preguntas'], {
+      state: { 
+        difficultyName: eventoDificultad.dificultad.nombre,
+        eventName: this.evento?.nombre
+      }
+    });
   }
 
   openNewDifficulty() {

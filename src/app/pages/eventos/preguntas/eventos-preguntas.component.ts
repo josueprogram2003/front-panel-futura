@@ -49,6 +49,7 @@ export class EventosPreguntasComponent implements OnInit {
   submitted: boolean = false;
   loading: boolean = false;
   message: string = '';
+  difficultyName: string = '';
 
   tiposPregunta = [
     { label: 'Alternativa Múltiple', value: 'alternativa' },
@@ -71,6 +72,15 @@ export class EventosPreguntasComponent implements OnInit {
       if (eId && dId) {
         this.eventoId = +eId;
         this.dificultadEventoId = +dId;
+
+        const state = history.state;
+        if (state) {
+            if (state.difficultyName) this.difficultyName = state.difficultyName;
+            if (state.eventName) {
+                this.evento = { id: this.eventoId, nombre: state.eventName, isActive: true, descripcion: '' };
+            }
+        }
+
         this.loadData();
       }
     });
@@ -79,22 +89,12 @@ export class EventosPreguntasComponent implements OnInit {
   async loadData() {
     this.loading = true;
     try {
-      const [resEvento, resPreguntas] = await firstValueFrom(forkJoin([
-        this.eventoService.getEventoById(this.eventoId),
-        this.eventoService.getEventosDificultadesPreguntasByEventoDificultadId(this.dificultadEventoId)
-      ]));
-      this.evento = resEvento.response;
-      this.preguntas = resPreguntas.response;
-      if (!this.evento) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Evento no encontrado' });
-        this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
-        return;
-      }
+      this.preguntas = await firstValueFrom(this.eventoService.getEventosDificultadesPreguntasByEventoDificultadId(this.dificultadEventoId)).then(res => res.response);
+      this.evento = await firstValueFrom(this.eventoService.getEventoById(this.eventoId)).then(res => res.response);
       this.loading = false;
     } catch (err) {
       this.loading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar datos' });
-      this.router.navigate(['/eventos', this.eventoId, 'dificultades']);
       console.error(err);
     }
   }
