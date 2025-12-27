@@ -18,7 +18,7 @@
                     label="Nuevo Evento" 
                     icon="pi pi-plus" 
                     (onClick)="openNewEvent()"
-                    styleClass="p-button-primary shadow-lg shadow-primary-500/30"
+                    styleClass="shadow-lg"
                     [rounded]="true">
                 </p-button>
             </div>
@@ -46,6 +46,7 @@
                     <th pSortableColumn="nombre" style="width:30%">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
                     <th pSortableColumn="fecha" style="width:20%">Fecha <p-sortIcon field="fecha"></p-sortIcon></th>
                     <th pSortableColumn="descripcion" style="width:30%">Descripción <p-sortIcon field="descripcion"></p-sortIcon></th>
+                    <th style="width:20%" class="text-center">Estado</th>
                     <th style="width:20%" class="text-center">Acciones</th>
                 </tr>
             </ng-template>
