@@ -87,7 +87,7 @@ export class EventoService {
   }
 
   insertPreguntasMasivo(preguntas: Pregunta[]): Observable<ApiResponse<Pregunta[]>> {
-    return this.http.post<ApiResponse<Pregunta[]>>(`${this.apiUrl}/preguntas/create/masivo`, preguntas);
+    return this.http.post<ApiResponse<Pregunta[]>>(`${this.apiUrl}/preguntas/save/masivo`, preguntas);
   }
 
   deletePregunta(id: number): Observable<ApiResponse<void>> {

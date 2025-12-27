@@ -12,6 +12,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { Evento, EventoDificultad, Pregunta } from '../../../core/models';
 import { EventoService } from '../../../core/services/evento.service';
@@ -169,6 +170,19 @@ export class EventosPreguntasComponent implements OnInit {
       this.newQuestionsBuffer.splice(index, 1);
   }
 
+  editFromBuffer(index: number) {
+      if (this.pregunta.pregunta?.trim()) {
+          this.addToBuffer();
+      }
+      // Si la pregunta actual sigue teniendo datos (no se pudo agregar al buffer), 
+      // decidimos si sobrescribir o no. Por simplicidad, asumimos que si el usuario
+      // quiere editar una anterior, prioriza eso.
+      
+      const questionToEdit = this.newQuestionsBuffer[index];
+      this.newQuestionsBuffer.splice(index, 1);
+      this.pregunta = { ...questionToEdit };
+  }
+
   saveQuestion() {
     this.submitted = true;
 
@@ -218,16 +232,22 @@ export class EventosPreguntasComponent implements OnInit {
                         this.eventoDificultad!.preguntas = [];
                     }
                     
-                    // Add new questions to local list
+                    // Add new questions to local list if returned
                     if (savedQuestions && Array.isArray(savedQuestions)) {
                          this.eventoDificultad!.preguntas.push(...savedQuestions);
+                         this.preguntas = [...(this.eventoDificultad?.preguntas || [])];
                     }
                 }
                 
-                this.preguntas = [...(this.eventoDificultad?.preguntas || [])];
+                if (isEdit) {
+                     this.preguntas = [...(this.eventoDificultad?.preguntas || [])];
+                }
 
                 this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: isEdit ? 'Pregunta actualizada' : 'Preguntas creadas', life: 3000 });
-                this.loadData();
+                
+                // Always reload data to ensure consistency and handle cases where response is null
+                await this.loadData();
+
                 this.questionDialog = false;
                 this.pregunta = this.createEmptyQuestion();
                 this.newQuestionsBuffer = [];

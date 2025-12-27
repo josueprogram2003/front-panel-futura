@@ -71,7 +71,7 @@
                             </span>
                         </td>
                         <td class="text-center">
-                            <div class="flex justify-center gap-2">
+                            <div class="flex justify-start gap-2">
                                 <p-button 
                                     icon="pi pi-pencil" 
                                     [rounded]="true" 
@@ -116,9 +116,14 @@
                     <div *ngFor="let q of newQuestionsBuffer; let i = index" class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                         <span class="truncate flex-1 font-medium text-sm">{{q.pregunta}}</span>
                         <span class="text-xs text-slate-500 px-2">{{q.tipo === 'vf' ? 'V/F' : 'Múltiple'}}</span>
-                        <button (click)="removeFromBuffer(i)" class="text-red-500 hover:text-red-700">
-                            <i class="pi pi-trash"></i>
-                        </button>
+                        <div class="flex gap-2">
+                            <button (click)="editFromBuffer(i)" class="text-blue-500 hover:text-blue-700" pTooltip="Editar" tooltipPosition="top">
+                                <i class="pi pi-pencil"></i>
+                            </button>
+                            <button (click)="removeFromBuffer(i)" class="text-red-500 hover:text-red-700" pTooltip="Eliminar" tooltipPosition="top">
+                                <i class="pi pi-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
