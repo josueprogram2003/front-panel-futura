@@ -59,9 +59,36 @@
                             <span>{{ evento.fecha | date:'mediumDate' }}</span>
                         </div>
                     </td>
-                    <td class="text-slate-600">{{ evento.descripcion }}</td>
+                    <td><span class="text-slate-500 text-sm">{{ evento.descripcion || 'Sin descripción' }}</span></td>
                     <td class="text-center">
-                        <div class="flex justify-start gap-2">
+                        <p-tag 
+                            [value]="evento.isVisible === 1 ? 'Activo' : 'Inactivo'" 
+                            [severity]="evento.isVisible === 1 ? 'success' : 'secondary'"
+                            [rounded]="true">
+                        </p-tag>
+                    </td>
+                    <td class="text-center">
+                        <div class="flex justify-center gap-2">
+                            <p-button 
+                                *ngIf="evento.isVisible !== 1"
+                                icon="pi pi-eye" 
+                                [rounded]="true" 
+                                [text]="true" 
+                                severity="help"
+                                pTooltip="Marcar como Visible" 
+                                tooltipPosition="top"
+                                (onClick)="toggleVisibility(evento)">
+                            </p-button>
+                            <p-button 
+                                *ngIf="evento.isVisible === 1"
+                                icon="pi pi-check-circle" 
+                                [rounded]="true" 
+                                [text]="true" 
+                                severity="success"
+                                pTooltip="Evento Actual" 
+                                tooltipPosition="top"
+                                styleClass="cursor-default">
+                            </p-button>
                             <p-button 
                                 icon="pi pi-list" 
                                 [rounded]="true" 

@@ -33,6 +33,10 @@ export class EventoService {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/eventos/${id}`);
   }
 
+  setEventoVisible(id: number): Observable<ApiResponse<void>> {
+    return this.http.put<ApiResponse<void>>(`${this.apiUrl}/eventos/${id}/visible`, {});
+  }
+
   // Dificultades Globales
   getDificultades(): Observable<ApiResponse<Dificultad[]>> {
     return this.http.get<ApiResponse<Dificultad[]>>(`${this.apiUrl}/dificultades`);

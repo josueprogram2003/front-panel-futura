@@ -6,7 +6,6 @@ export interface Evento {
   descripcion?: string;
   fecha?: string | Date;
   isActive: boolean;
-
-  // Navigation property
+  isVisible?: number;
   evento_dificultad?: EventoDificultad[];
 }

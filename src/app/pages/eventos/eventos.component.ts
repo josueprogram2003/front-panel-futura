@@ -11,6 +11,8 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CheckboxModule } from 'primeng/checkbox';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { Evento } from '../../core/models';
 import { EventoService } from '../../core/services/evento.service';
@@ -31,6 +33,8 @@ import { LoadingOverlayComponent } from '../../shared/components/loading-overlay
     ToastModule,
     ConfirmDialogModule,
     CheckboxModule,
+    TagModule,
+    TooltipModule,
     LoadingOverlayComponent
   ],
   providers: [MessageService, ConfirmationService],
@@ -156,6 +160,31 @@ export class EventosComponent implements OnInit {
         } catch (err: any) {
           this.loading = false;
           this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al eliminar evento' });
+        }
+      }
+    });
+  }
+
+  toggleVisibility(evento: Evento) {
+    // If already visible, do nothing or maybe allow toggle off? 
+    // The requirement says "set isVisible=1 for this event and 0 for others".
+    // So usually clicking it makes it the active one.
+    if (evento.isVisible === 1) return;
+
+    this.confirmationService.confirm({
+      message: `¿Deseas marcar el evento "${evento.nombre}" como el evento visible principal? Esto ocultará los demás eventos.`,
+      header: 'Confirmar Visibilidad',
+      icon: 'pi pi-eye',
+      accept: async () => {
+        this.loading = true;
+        try {
+          await firstValueFrom(this.eventoService.setEventoVisible(evento.id));
+          this.loading = false;
+          this.loadEventos(); // Refresh list to see updates from backend
+          this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Visibilidad actualizada correctamente', life: 3000 });
+        } catch (err: any) {
+          this.loading = false;
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al actualizar visibilidad' });
         }
       }
     });

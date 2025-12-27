@@ -226,6 +226,7 @@ export class EventosPreguntasComponent implements OnInit {
                     }
 
                     const res = await firstValueFrom(this.eventoService.insertPreguntasMasivo(questionsToSave));
+                    console.log('Bulk insert response:', res);
                     const savedQuestions = res.response;
 
                     if (!this.eventoDificultad!.preguntas) {
