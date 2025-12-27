@@ -7,7 +7,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
   standalone: true,
   imports: [CommonModule, ProgressSpinnerModule],
   template: `
-    <div *ngIf="loading" class="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-lg">
+    <div *ngIf="loading" class="fixed w-full inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-lg" style="z-index: 10000000000000 !important;">
       <div class="flex flex-col items-center gap-3">
         <p-progressSpinner 
           styleClass="w-12 h-12" 

@@ -8,6 +8,8 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageModule } from 'primeng/message';
+import { MessagesModule } from 'primeng/messages';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { Dificultad } from '../../core/models';
 import { EventoService } from '../../core/services/evento.service';
@@ -25,6 +27,8 @@ import { LoadingOverlayComponent } from '../../shared/components/loading-overlay
     InputTextModule,
     ToastModule,
     ConfirmDialogModule,
+    MessageModule,
+    MessagesModule,
     LoadingOverlayComponent
   ],
   providers: [MessageService, ConfirmationService],
