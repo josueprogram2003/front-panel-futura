@@ -1,6 +1,8 @@
+<app-loading-overlay [loading]="loading"></app-loading-overlay>
+
 <div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-4rem)] flex flex-col">
   <p-toast></p-toast>
-  <p-confirmDialog key="eventosDificultadesConfirm" [style]="{ width: '450px' }"></p-confirmDialog>
+  <p-confirmDialog key="eventosDificultadesConfirm" [style]="{ width: '450px' }" appendTo="body"></p-confirmDialog>
 
   <div class="fade-in flex flex-col h-full">
     <div
@@ -30,7 +32,6 @@
       </div>
     </div>
     <div class="flex-1 overflow-hidden relative">
-      <app-loading-overlay [loading]="loading"></app-loading-overlay>
       <p-table [value]="dificultadesEventos" [rows]="10" [paginator]="true" [rowHover]="true" dataKey="id"
         styleClass="p-datatable-sm h-full flex flex-col" [scrollable]="true" scrollHeight="flex">
 
@@ -82,6 +83,7 @@
         [style]="{ width: '450px' }" 
         header="Detalles de la Dificultad" 
         [modal]="true" 
+        appendTo="body"
         styleClass="p-fluid">
         <ng-template pTemplate="content">
             <div class="field mb-4">

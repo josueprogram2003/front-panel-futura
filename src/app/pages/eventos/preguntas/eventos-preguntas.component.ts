@@ -143,33 +143,50 @@ export class EventosPreguntasComponent implements OnInit {
     this.submitted = false;
   }
 
-  // saveQuestion() {
-  //   this.submitted = true;
+  saveQuestion() {
+    this.submitted = true;
 
-  //   if (this.pregunta.pregunta?.trim() && this.eventoDificultad) {
-  //     if (!this.eventoDificultad.preguntas) {
-  //       this.eventoDificultad.preguntas = [];
-  //     }
+    // if (this.pregunta.pregunta?.trim() && this.eventoDificultad) {
+    //   const isEdit = this.pregunta.id !== 0;
+      
+    //   this.confirmationService.confirm({
+    //     key: 'eventosPreguntasConfirm',
+    //     message: isEdit ? '¿Estás seguro de actualizar esta pregunta?' : '¿Estás seguro de crear esta pregunta?',
+    //     header: isEdit ? 'Confirmar Edición' : 'Confirmar Creación',
+    //     icon: 'pi pi-exclamation-triangle',
+    //     accept: async () => {
+    //         if (!this.eventoDificultad!.preguntas) {
+    //             this.eventoDificultad!.preguntas = [];
+    //         }
 
-  //     if (this.pregunta.id) {
-  //       const index = this.eventoDificultad.preguntas.findIndex(q => q.id === this.pregunta.id);
-  //       if (index !== -1) {
-  //           this.eventoDificultad.preguntas[index] = this.pregunta;
-  //           this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta actualizada', life: 3000 });
-  //       }
-  //     } else {
-  //       // ID generation should be handled by backend usually, but for nested object update we might need it or backend ignores 0
-  //       this.pregunta.id = this.eventoService.createId();
-  //       this.pregunta.evento_dificultad_id = this.eventoDificultad.id;
-  //       this.eventoDificultad.preguntas.push(this.pregunta);
-  //       this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta creada', life: 3000 });
-  //     }
+    //         if (this.pregunta.id) {
+    //             const index = this.eventoDificultad!.preguntas.findIndex(q => q.id === this.pregunta.id);
+    //             if (index !== -1) {
+    //                 this.eventoDificultad!.preguntas[index] = this.pregunta;
+    //             }
+    //         } else {
+    //             this.pregunta.id = this.eventoService.createId();
+    //             this.pregunta.evento_dificultad_id = this.eventoDificultad!.id;
+    //             this.eventoDificultad!.preguntas.push(this.pregunta);
+    //         }
 
-  //     this.saveChanges();
-  //     this.questionDialog = false;
-  //     this.pregunta = this.createEmptyQuestion();
-  //   }
-  // }
+    //         this.loading = true;
+    //         this.message = isEdit ? 'Actualizando pregunta...' : 'Guardando pregunta...';
+            
+    //         try {
+    //             await this.saveChanges();
+    //             this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: isEdit ? 'Pregunta actualizada' : 'Pregunta creada', life: 3000 });
+    //             this.questionDialog = false;
+    //             this.pregunta = this.createEmptyQuestion();
+    //         } catch (error) {
+    //             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar pregunta' });
+    //         } finally {
+    //             this.loading = false;
+    //         }
+    //     }
+    //   });
+    // }
+  }
 
   async saveChanges() {
     if (this.eventoDificultad && this.evento) {

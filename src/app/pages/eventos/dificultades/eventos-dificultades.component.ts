@@ -150,25 +150,36 @@ export class EventosDificultadesComponent implements OnInit {
     this.submitted = true;
 
     if (this.selectedDifficulty) {
-      const payload: EventoDificultad = {
-        id: this.currentEventoDificultadId !== 0 ? this.currentEventoDificultadId : undefined,
-        evento_id: this.eventoId,
-        dificultad_id: this.selectedDifficulty.id,
-        isActive: true
-      };
+      const isEdit = this.currentEventoDificultadId !== 0;
+      
+      this.confirmationService.confirm({
+        key: 'eventosDificultadesConfirm',
+        message: isEdit ? '¿Estás seguro de actualizar esta dificultad?' : '¿Estás seguro de agregar esta dificultad?',
+        header: isEdit ? 'Confirmar Edición' : 'Confirmar Creación',
+        icon: 'pi pi-exclamation-triangle',
+        accept: async () => {
+            const payload: EventoDificultad = {
+                id: this.currentEventoDificultadId !== 0 ? this.currentEventoDificultadId : undefined,
+                evento_id: this.eventoId,
+                dificultad_id: this.selectedDifficulty!.id,
+                isActive: true
+            };
 
-      this.loading = true;
-      try {
-          await firstValueFrom(this.eventoService.saveEventoDificultad(payload));
-          this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
-          this.difficultyDialog = false;
-          await this.loadDificultadByEventoId(this.eventoId);
-      } catch (err:any) {
-          this.messageService.add({ severity: 'warn', summary: 'Error', detail: err.error.message });
-          console.error(err);
-      } finally {
-        this.loading = false;
-      }
+            this.loading = true;
+            this.message = isEdit ? 'Actualizando dificultad...' : 'Guardando dificultad...';
+            try {
+                await firstValueFrom(this.eventoService.saveEventoDificultad(payload));
+                this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: isEdit ? 'Dificultad actualizada' : 'Dificultad guardada', life: 3000 });
+                this.difficultyDialog = false;
+                await this.loadDificultadByEventoId(this.eventoId);
+            } catch (err:any) {
+                this.messageService.add({ severity: 'warn', summary: 'Error', detail: err.error?.message || 'Error al guardar' });
+                console.error(err);
+            } finally {
+                this.loading = false;
+            }
+        }
+      });
     }
   }
 
