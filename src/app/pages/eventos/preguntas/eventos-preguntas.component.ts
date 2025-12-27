@@ -50,6 +50,7 @@ export class EventosPreguntasComponent implements OnInit {
   loading: boolean = false;
   message: string = '';
   difficultyName: string = '';
+  newQuestionsBuffer: Pregunta[] = [];
 
   tiposPregunta = [
     { label: 'Alternativa Múltiple', value: 'alternativa' },
@@ -101,12 +102,23 @@ export class EventosPreguntasComponent implements OnInit {
 
   openNewQuestion() {
     this.pregunta = this.createEmptyQuestion();
+    this.newQuestionsBuffer = [];
     this.submitted = false;
     this.questionDialog = true;
   }
 
   editQuestion(pregunta: Pregunta) {
     this.pregunta = JSON.parse(JSON.stringify(pregunta));
+    
+    // Fix: Convert numeric 1/0 to boolean for p-checkbox
+    if (this.pregunta.alternativas) {
+        this.pregunta.alternativas.forEach(alt => {
+            // @ts-ignore
+            alt.respuesta_correcta = alt.respuesta_correcta === 1 || alt.respuesta_correcta === '1' || alt.respuesta_correcta === true;
+        });
+    }
+
+    this.newQuestionsBuffer = [];
     this.questionDialog = true;
   }
 
@@ -117,16 +129,21 @@ export class EventosPreguntasComponent implements OnInit {
       header: 'Confirmar Eliminación',
       icon: 'pi pi-exclamation-triangle',
       accept: async () => {
-        if (this.eventoDificultad && this.eventoDificultad.preguntas) {
-          const previousPreguntas = [...this.eventoDificultad.preguntas];
-          this.eventoDificultad.preguntas = this.eventoDificultad.preguntas.filter(val => val.id !== pregunta.id);
+        this.loading = true;
+        try {
+          await firstValueFrom(this.eventoService.deletePregunta(pregunta.id));
           
-          try {
-            await this.saveChanges();
-            this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta eliminada', life: 3000 });
-          } catch (error) {
-            this.eventoDificultad.preguntas = previousPreguntas;
+          if (this.eventoDificultad && this.eventoDificultad.preguntas) {
+            this.eventoDificultad.preguntas = this.eventoDificultad.preguntas.filter(val => val.id !== pregunta.id);
+            this.preguntas = [...this.eventoDificultad.preguntas];
           }
+          
+          this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Pregunta eliminada', life: 3000 });
+          this.loadData();
+        } catch (error) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar pregunta' });
+        } finally {
+          this.loading = false;
         }
       }
     });
@@ -137,43 +154,86 @@ export class EventosPreguntasComponent implements OnInit {
     this.submitted = false;
   }
 
+  addToBuffer() {
+    this.submitted = true;
+    if (this.pregunta.pregunta?.trim()) {
+        this.pregunta.evento_dificultad_id = this.dificultadEventoId;
+        this.newQuestionsBuffer.push({...this.pregunta});
+        this.pregunta = this.createEmptyQuestion();
+        this.submitted = false;
+        this.messageService.add({ severity: 'info', summary: 'Agregada', detail: 'Pregunta agregada a la lista para guardar' });
+    }
+  }
+
+  removeFromBuffer(index: number) {
+      this.newQuestionsBuffer.splice(index, 1);
+  }
+
   saveQuestion() {
     this.submitted = true;
 
-    if (this.pregunta.pregunta?.trim() && this.eventoDificultad) {
+    // Check if we have anything to save: either buffer is not empty OR current form is valid
+    const hasCurrent = !!this.pregunta.pregunta?.trim();
+    const hasBuffer = this.newQuestionsBuffer.length > 0;
+
+    if (hasCurrent || hasBuffer) {
       const isEdit = this.pregunta.id !== 0;
       
       this.confirmationService.confirm({
         key: 'eventosPreguntasConfirm',
-        message: isEdit ? '¿Estás seguro de actualizar esta pregunta?' : '¿Estás seguro de crear esta pregunta?',
-        header: isEdit ? 'Confirmar Edición' : 'Confirmar Creación',
+        message: isEdit ? '¿Estás seguro de actualizar esta pregunta?' : `¿Estás seguro de crear ${this.newQuestionsBuffer.length + (hasCurrent ? 1 : 0)} preguntas?`,
+        header: isEdit ? 'Confirmar Edición' : 'Confirmar Creación Masiva',
         icon: 'pi pi-exclamation-triangle',
         accept: async () => {
-            if (!this.eventoDificultad!.preguntas) {
-                this.eventoDificultad!.preguntas = [];
-            }
-
-            if (this.pregunta.id) {
-                const index = this.eventoDificultad!.preguntas.findIndex(q => q.id === this.pregunta.id);
-                if (index !== -1) {
-                    this.eventoDificultad!.preguntas[index] = this.pregunta;
-                }
-            } else {
-                this.pregunta.id = this.eventoService.createId();
-                this.pregunta.evento_dificultad_id = this.eventoDificultad!.id!;
-                this.eventoDificultad!.preguntas.push(this.pregunta);
-            }
-
             this.loading = true;
-            this.message = isEdit ? 'Actualizando pregunta...' : 'Guardando pregunta...';
+            this.message = isEdit ? 'Actualizando pregunta...' : 'Guardando preguntas...';
             
             try {
-                await this.saveChanges();
-                this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: isEdit ? 'Pregunta actualizada' : 'Pregunta creada', life: 3000 });
+                // Ensure foreign key is set for the current question form
+                this.pregunta.evento_dificultad_id = this.dificultadEventoId;
+
+                if (isEdit) {
+                    // Update single (via bulk endpoint as requested)
+                    const payload = [this.pregunta];
+                    await firstValueFrom(this.eventoService.updatePreguntasMasivo(payload));
+                    
+                    // Update local list
+                    if (this.eventoDificultad?.preguntas) {
+                        const index = this.eventoDificultad.preguntas.findIndex(q => q.id === this.pregunta.id);
+                        if (index !== -1) {
+                            this.eventoDificultad.preguntas[index] = this.pregunta;
+                        }
+                    }
+                } else {
+                    // Insert bulk
+                    const questionsToSave = [...this.newQuestionsBuffer];
+                    if (hasCurrent) {
+                        questionsToSave.push(this.pregunta);
+                    }
+
+                    const res = await firstValueFrom(this.eventoService.insertPreguntasMasivo(questionsToSave));
+                    const savedQuestions = res.response;
+
+                    if (!this.eventoDificultad!.preguntas) {
+                        this.eventoDificultad!.preguntas = [];
+                    }
+                    
+                    // Add new questions to local list
+                    if (savedQuestions && Array.isArray(savedQuestions)) {
+                         this.eventoDificultad!.preguntas.push(...savedQuestions);
+                    }
+                }
+                
+                this.preguntas = [...(this.eventoDificultad?.preguntas || [])];
+
+                this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: isEdit ? 'Pregunta actualizada' : 'Preguntas creadas', life: 3000 });
+                this.loadData();
                 this.questionDialog = false;
                 this.pregunta = this.createEmptyQuestion();
+                this.newQuestionsBuffer = [];
             } catch (error) {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar pregunta' });
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar preguntas' });
+                console.error(error);
             } finally {
                 this.loading = false;
             }
@@ -182,14 +242,8 @@ export class EventosPreguntasComponent implements OnInit {
     }
   }
 
-  async saveChanges() {
-    if (this.eventoDificultad && this.evento) {
-        try {
-            await firstValueFrom(this.eventoService.saveEventoDificultad(this.eventoDificultad));
-        } catch (err) {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar cambios' });
-        }
-    }
+  saveChanges() {
+    // Deprecated: using specific service methods now
   }
 
   onTypeChange() {

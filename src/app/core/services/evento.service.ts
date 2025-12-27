@@ -75,6 +75,25 @@ export class EventoService {
     return this.http.get<ApiResponse<EventoDificultad>>(`${this.apiUrl}/evento-dificultad/${id}/preguntas`);
   }
 
+  savePregunta(pregunta: Pregunta): Observable<ApiResponse<Pregunta>> {
+    if (pregunta.id && pregunta.id !== 0) {
+      return this.http.put<ApiResponse<Pregunta>>(`${this.apiUrl}/preguntas/${pregunta.id}`, pregunta);
+    }
+    return this.http.post<ApiResponse<Pregunta>>(`${this.apiUrl}/preguntas`, pregunta);
+  }
+
+  updatePreguntasMasivo(preguntas: Pregunta[]): Observable<ApiResponse<Pregunta[]>> {
+    return this.http.put<ApiResponse<Pregunta[]>>(`${this.apiUrl}/preguntas/update/masivo`, preguntas);
+  }
+
+  insertPreguntasMasivo(preguntas: Pregunta[]): Observable<ApiResponse<Pregunta[]>> {
+    return this.http.post<ApiResponse<Pregunta[]>>(`${this.apiUrl}/preguntas/create/masivo`, preguntas);
+  }
+
+  deletePregunta(id: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/preguntas/${id}`);
+  }
+
   createId(): number {
     return Math.floor(Math.random() * 10000);
   }
