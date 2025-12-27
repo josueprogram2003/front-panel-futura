@@ -53,10 +53,10 @@ export class DificultadesComponent implements OnInit {
     try {
       const res = await firstValueFrom(this.eventoService.getDificultades());
       this.dificultades = res.response;
-      this.loading = false;
     } catch (err) {
-      this.loading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar dificultades' });
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -73,16 +73,20 @@ export class DificultadesComponent implements OnInit {
 
   deleteDificultad(dificultad: Dificultad) {
     this.confirmationService.confirm({
+      key: 'dificultadesConfirm',
       message: '¿Estás seguro de que deseas eliminar ' + dificultad.nombre + '?',
       header: 'Confirmar',
       icon: 'pi pi-exclamation-triangle',
       accept: async () => {
+        this.loading = true;
         try {
           await firstValueFrom(this.eventoService.deleteDificultad(dificultad.id));
           this.loadDificultades();
           this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad eliminada', life: 3000 });
         } catch (err) {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar dificultad' });
+        } finally {
+          this.loading = false;
         }
       }
     });
@@ -92,6 +96,7 @@ export class DificultadesComponent implements OnInit {
     this.submitted = true;
 
     if (this.dificultad.nombre?.trim()) {
+      this.loading = true;
       try {
         await firstValueFrom(this.eventoService.saveDificultad(this.dificultad));
         this.loadDificultades();
@@ -100,6 +105,8 @@ export class DificultadesComponent implements OnInit {
         this.dificultad = this.createEmptyDificultad();
       } catch (err) {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar dificultad' });
+      } finally {
+        this.loading = false;
       }
     }
   }

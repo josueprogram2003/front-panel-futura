@@ -63,7 +63,7 @@ export class EventoService {
       if (eventoDificultad.id && eventoDificultad.id !== 0) {
           return this.http.put<ApiResponse<EventoDificultad>>(`${this.apiUrl}/eventos/${eventoId}/dificultades/${eventoDificultad.id}`, eventoDificultad);
       }
-      return this.http.post<ApiResponse<EventoDificultad>>(`${this.apiUrl}/eventos/${eventoId}/dificultades`, eventoDificultad);
+      return this.http.post<ApiResponse<EventoDificultad>>(`${this.apiUrl}/evento-dificultad`, eventoDificultad);
   }
 
   createId(): number {

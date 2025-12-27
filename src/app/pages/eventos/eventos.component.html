@@ -24,7 +24,8 @@
             </div>
         </div>
 
-        <div class="flex-1 overflow-hidden">
+        <div class="flex-1 overflow-hidden relative">
+            <app-loading-overlay [loading]="loading"></app-loading-overlay>
             <p-table 
                 #dt 
                 [value]="eventos" 

@@ -85,8 +85,6 @@
         </p-table>
         </div>
     </div>
-
-    <!-- DIFICULTAD DIALOG -->
     <p-dialog 
         [(visible)]="dificultadDialog" 
         [style]="{ width: '450px' }" 
@@ -94,14 +92,13 @@
         [modal]="true" 
         styleClass="p-fluid">
         <ng-template pTemplate="content">
-            <div class="field mb-4">
-                <label for="nombre" class="font-semibold block mb-2">Nombre</label>
-                <input type="text" pInputText id="nombre" [(ngModel)]="dificultad.nombre" required autofocus />
-                <small class="p-error block" *ngIf="submitted && !dificultad.nombre">El nombre es requerido.</small>
-            </div>
-            <div class="field flex items-center gap-2">
-                <input type="checkbox" id="isActive" [(ngModel)]="dificultad.isActive" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
-                <label for="isActive" class="font-semibold text-slate-700">Activo</label>
+            <div class="relative">
+                <app-loading-overlay [loading]="loading" message="Guardando..."></app-loading-overlay>
+                <div class="field mb-4">
+                    <label for="nombre" class="font-semibold block mb-2">Nombre</label>
+                    <input type="text" class="w-full" pInputText id="nombre" [(ngModel)]="dificultad.nombre" required autofocus />
+                    <small class="p-error block" *ngIf="submitted && !dificultad.nombre">El nombre es requerido.</small>
+                </div>
             </div>
         </ng-template>
 

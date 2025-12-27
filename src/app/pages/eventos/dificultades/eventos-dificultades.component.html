@@ -88,6 +88,7 @@
             <div class="field mb-4">
                 <label for="dificultad" class="font-semibold block mb-2">Dificultad</label>
                 <p-dropdown 
+                    [(ngModel)]="selectedDifficulty"
                     [options]="dificultades" 
                     optionLabel="nombre" 
                     dataKey="id"
@@ -96,7 +97,7 @@
                     appendTo="body"
                     [style]="{'width':'100%'}">
                 </p-dropdown>
-                <small class="p-error block" *ngIf="submitted && !eventoDificultad.dificultad">La dificultad es requerida.</small>
+                <small class="p-error block" *ngIf="submitted && !selectedDifficulty">La dificultad es requerida.</small>
             </div>
         </ng-template>
 

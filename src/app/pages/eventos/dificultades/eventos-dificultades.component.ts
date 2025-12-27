@@ -42,6 +42,7 @@ export class EventosDificultadesComponent implements OnInit {
   difficultyDialog: boolean = false;
   submitted: boolean = false;
   loading: boolean = false;
+  selectedDifficulty: Dificultad | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -56,9 +57,9 @@ export class EventosDificultadesComponent implements OnInit {
       const id = params.get('id');
       if (id) {
         this.eventoId = Number(id);
+        await this.getEvento(this.eventoId || 0);
         await this.loadDificultadByEventoId(this.eventoId || 0);
-        await this.getEvento(this.eventoId || 0)
-        await this.getDificultades()
+        await this.getDificultades();
       }
     });
   }
@@ -75,9 +76,7 @@ export class EventosDificultadesComponent implements OnInit {
   async getEvento(evento_id:number){
     try {
       const resp = await firstValueFrom(this.eventoService.getEventoById(evento_id))
-      if (resp.status == 200) {
-        this.evento = resp.response;
-      }
+      this.evento = resp.response;
     } catch (error) {
       console.log(error)
     }
@@ -86,9 +85,7 @@ export class EventosDificultadesComponent implements OnInit {
   async getDificultades(){
     try {
       const resp = await firstValueFrom(this.eventoService.getDificultades())
-      if (resp.status == 200) {
-        this.dificultades = resp.response;
-      }
+      this.dificultades = resp.response;
     } catch (error) {
       console.log(error)
     }
@@ -100,6 +97,7 @@ export class EventosDificultadesComponent implements OnInit {
 
   openNewDifficulty() {
     this.submitted = false;
+    this.selectedDifficulty = undefined;
     this.difficultyDialog = true;
   }
 
@@ -135,18 +133,31 @@ export class EventosDificultadesComponent implements OnInit {
   async saveDifficulty() {
     this.submitted = true;
 
-    // if (this.eventoDificultad.dificultad && this.evento) {
-    //   this.eventoDificultad.dificultad_id = this.eventoDificultad.dificultad.id;
+    if (this.selectedDifficulty) {
+      const payload: EventoDificultad = {
+        evento_id: this.eventoId,
+        dificultad_id: this.selectedDifficulty.id,
+        isActive: true
+      };
 
-    //   try {
-    //       await firstValueFrom(this.eventoService.saveEventoDificultad(this.evento.id, this.eventoDificultad));
-    //       this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
-    //       this.difficultyDialog = false;
-    //       await this.loadDificultadByEventoId(this.eventoId);
-    //   } catch (err) {
-    //       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar dificultad' });
-    //   }
-    // }
+      try {
+          await firstValueFrom(this.eventoService.saveEventoDificultad(this.eventoId, payload));
+          this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Dificultad guardada', life: 3000 });
+          this.difficultyDialog = false;
+          await this.loadDificultadByEventoId(this.eventoId);
+      } catch (err:any) {
+          this.messageService.add({ severity: 'warn', summary: 'Error', detail: err.error.message });
+          console.error(err);
+      }
+    }
+  }
+
+  createEmptyEventoDificultad(): EventoDificultad {
+    return {
+      evento_id: this.eventoId,
+      dificultad_id: 0,
+      isActive: true
+    };
   }
 
 }
