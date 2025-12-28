@@ -54,9 +54,9 @@
                     </tr>
                 </ng-template>
                 
-                <ng-template pTemplate="body" let-pregunta>
+                <ng-template pTemplate="body" let-pregunta let-rowIndex="rowIndex">
                     <tr>
-                        <td class="text-slate-500">#{{ pregunta.id }}</td>
+                        <td class="text-slate-500">{{ rowIndex + 1 }}</td>
                         <td class="font-medium text-slate-800">{{ pregunta.pregunta }}</td>
                         <td>
                             <p-tag 

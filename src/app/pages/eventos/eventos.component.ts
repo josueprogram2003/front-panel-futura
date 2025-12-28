@@ -13,6 +13,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { Evento } from '../../core/models';
 import { EventoService } from '../../core/services/evento.service';
@@ -35,6 +36,7 @@ import { LoadingOverlayComponent } from '../../shared/components/loading-overlay
     CheckboxModule,
     TagModule,
     TooltipModule,
+    ToggleSwitchModule,
     LoadingOverlayComponent
   ],
   providers: [MessageService, ConfirmationService],
@@ -83,7 +85,11 @@ export class EventosComponent implements OnInit {
     this.loading = true;
     try {
       const res = await firstValueFrom(this.eventoService.getEventos());
-      this.eventos = res.response;
+      // Convert isVisible number to boolean for UI
+      this.eventos = res.response.map(e => ({
+        ...e,
+        isActiveBoolean: e.isVisible === 1 
+      })) as any[];
       this.loading = false;
     } catch (error) {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar eventos' });
@@ -165,11 +171,25 @@ export class EventosComponent implements OnInit {
     });
   }
 
-  toggleVisibility(evento: Evento) {
-    // If already visible, do nothing or maybe allow toggle off? 
-    // The requirement says "set isVisible=1 for this event and 0 for others".
-    // So usually clicking it makes it the active one.
-    if (evento.isVisible === 1) return;
+  onVisibilityChange(evento: any) {
+    // Revert the toggle immediately because we want to confirm first
+    evento.isActiveBoolean = !evento.isActiveBoolean;
+
+    // If it was already active (we are trying to deactivate), prevent it if single active is enforced
+    // But requirement says "set isVisible=1 for this event and 0 for others", usually implies selecting a new active one.
+    // Assuming clicking an inactive switch makes it active.
+    
+    // Logic: 
+    // If the user clicked to ACTIVATE (currently false -> true), we confirm and then activate.
+    // If the user clicked to DEACTIVATE (currently true -> false), we might warn them or just allow it (setting all to 0?).
+    // Based on previous logic `toggleVisibility`, it seems we only care about Activating one.
+
+    if (evento.isVisible === 1) {
+        // User tried to turn OFF the active event
+        this.messageService.add({ severity: 'warn', summary: 'Aviso', detail: 'Debes activar otro evento para desactivar este.' });
+        evento.isActiveBoolean = true; // Force keep on
+        return;
+    }
 
     this.confirmationService.confirm({
       message: `¿Deseas marcar el evento "${evento.nombre}" como el evento visible principal? Esto ocultará los demás eventos.`,
@@ -184,10 +204,20 @@ export class EventosComponent implements OnInit {
           this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Visibilidad actualizada correctamente', life: 3000 });
         } catch (err: any) {
           this.loading = false;
+          // Revert on error
+          evento.isActiveBoolean = false;
           this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al actualizar visibilidad' });
         }
+      },
+      reject: () => {
+          // Revert if rejected
+          evento.isActiveBoolean = false;
       }
     });
+  }
+
+  toggleVisibility(evento: Evento) {
+     // Deprecated in favor of switch
   }
 
   hideEventDialog() {

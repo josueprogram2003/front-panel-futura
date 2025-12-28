@@ -46,12 +46,13 @@
                     <th pSortableColumn="nombre" style="width:30%">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
                     <th pSortableColumn="fecha" style="width:20%">Fecha <p-sortIcon field="fecha"></p-sortIcon></th>
                     <th pSortableColumn="descripcion" style="width:30%">Descripción <p-sortIcon field="descripcion"></p-sortIcon></th>
+                    <th style="width:20%" class="text-center">Predeterminado</th>
                     <th style="width:20%" class="text-center">Estado</th>
                     <th style="width:20%" class="text-center">Acciones</th>
                 </tr>
             </ng-template>
             
-            <ng-template pTemplate="body" let-evento>
+            <ng-template pTemplate="body" let-evento let-rowIndex="rowIndex">
                 <tr>
                     <td class="font-medium">{{ evento.nombre }}</td>
                     <td>
@@ -62,42 +63,55 @@
                     </td>
                     <td><span class="text-slate-500 text-sm">{{ evento.descripcion || 'Sin descripción' }}</span></td>
                     <td class="text-center">
-                        <p-tag 
-                            [value]="evento.isVisible === 1 ? 'Activo' : 'Inactivo'" 
-                            [severity]="evento.isVisible === 1 ? 'success' : 'secondary'"
-                            [rounded]="true">
-                        </p-tag>
+                        <div class="flex justify-start items-center">
+                            <p-toggleswitch 
+                                [(ngModel)]="evento.isPredeterminado" 
+                                (onChange)="onVisibilityChange(evento)"
+                                [pTooltip]="evento.isPredeterminado ? 'Desactivar Predeterminado' : 'Activar Predeterminado'" 
+                                tooltipPosition="top">
+                            </p-toggleswitch>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div class="flex justify-start items-center">
+                            <p-toggleswitch 
+                                [(ngModel)]="evento.isActiveBoolean" 
+                                (onChange)="onVisibilityChange(evento)"
+                                [pTooltip]="evento.isActiveBoolean ? 'Desactivar Evento' : 'Activar Evento'" 
+                                tooltipPosition="top">
+                            </p-toggleswitch>
+                        </div>
                     </td>
                     <td class="text-center">
                         <div class="flex justify-center gap-2">
                             <p-button 
-                                *ngIf="evento.isVisible !== 1"
-                                icon="pi pi-eye" 
-                                [rounded]="true" 
-                                [text]="true" 
-                                severity="help"
-                                pTooltip="Marcar como Visible" 
-                                tooltipPosition="top"
-                                (onClick)="toggleVisibility(evento)">
-                            </p-button>
-                            <p-button 
-                                *ngIf="evento.isVisible === 1"
-                                icon="pi pi-check-circle" 
-                                [rounded]="true" 
-                                [text]="true" 
-                                severity="success"
-                                pTooltip="Evento Actual" 
-                                tooltipPosition="top"
-                                styleClass="cursor-default">
-                            </p-button>
-                            <p-button 
-                                icon="pi pi-list" 
                                 [rounded]="true" 
                                 [text]="true" 
                                 severity="info"
-                                pTooltip="Ver Dificultades" 
+                                pTooltip="Ver Configuración" 
                                 tooltipPosition="top"
                                 (onClick)="manageDifficulties(evento)">
+                                    <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    >
+                                        <line x1="4" y1="21" x2="4" y2="14" />
+                                        <line x1="4" y1="10" x2="4" y2="3" />
+                                        <line x1="12" y1="21" x2="12" y2="12" />
+                                        <line x1="12" y1="8" x2="12" y2="3" />
+                                        <line x1="20" y1="21" x2="20" y2="16" />
+                                        <line x1="20" y1="12" x2="20" y2="3" />
+                                        <line x1="1" y1="14" x2="7" y2="14" />
+                                        <line x1="9" y1="8" x2="15" y2="8" />
+                                        <line x1="17" y1="16" x2="23" y2="16" />
+                                    </svg>
                             </p-button>
                             <p-button 
                                 icon="pi pi-pencil" 
