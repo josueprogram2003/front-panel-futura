@@ -177,6 +177,7 @@ export class EventosComponent implements OnInit {
 
   deleteEvent(evento: Evento) {
     this.confirmationService.confirm({
+      key: 'eventosConfirm',
       message: '¿Estás seguro de eliminar este evento?',
       header: 'Confirmar Eliminación',
       icon: 'pi pi-exclamation-triangle',
@@ -202,6 +203,7 @@ export class EventosComponent implements OnInit {
         return;
     }
     this.confirmationService.confirm({
+      key: 'eventosConfirm',
       message: `¿Deseas marcar el evento "${evento.nombre}" como el evento visible principal? Esto ocultará los demás eventos.`,
       header: 'Confirmar Visibilidad',
       icon: 'pi pi-eye',
@@ -227,6 +229,7 @@ export class EventosComponent implements OnInit {
 
   onPredeterminadoChange(evento: any) {
     this.confirmationService.confirm({
+      key: 'eventosConfirm',
       message:!evento.isPredeterminadoBoolean
         ? `¿Deseas marcar el evento "${evento.nombre}" como predeterminado?`
         : `¿Deseas quitar el evento "${evento.nombre}" como predeterminado?`,
@@ -262,6 +265,7 @@ export class EventosComponent implements OnInit {
       const eventoData = this.eventForm.value as Evento;
       const isEditing = eventoData.id && eventoData.id !== 0;
       this.confirmationService.confirm({
+        key: 'eventosConfirm',
         message: isEditing ? '¿Estás seguro de que deseas actualizar este evento?' : '¿Estás seguro de que deseas guardar este evento?',
         header: isEditing ? 'Confirmar Actualización' : 'Confirmar Guardado',
         icon: 'pi pi-exclamation-triangle',
