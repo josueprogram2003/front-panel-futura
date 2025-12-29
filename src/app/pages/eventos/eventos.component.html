@@ -151,11 +151,17 @@
     <p-dialog 
         [(visible)]="eventDialog" 
         [style]="{ width: '450px' }" 
-        [header]="eventForm.get('id')?.value ? 'Editar Evento' : 'Nuevo Evento'"
         [modal]="true" 
-        styleClass="p-fluid">
+        styleClass="p-fluid custom-dialog-header">
+        
+        <ng-template pTemplate="header">
+            <div class="flex justify-between items-center w-full">
+                <span class="text-xl font-bold text-white">{{ eventForm.get('id')?.value ? 'Editar Evento' : 'Nuevo Evento' }}</span>
+            </div>
+        </ng-template>
+
         <ng-template pTemplate="content">
-            <form [formGroup]="eventForm" class="flex flex-col gap-4">
+            <form [formGroup]="eventForm" class="flex flex-col gap-4 mt-4">
                 <div class="field">
                     <label for="nombre" class="font-semibold block mb-2">Nombre</label>
                     <input type="text" pInputText id="nombre" formControlName="nombre" class="w-full" autofocus />
@@ -179,10 +185,10 @@
         </ng-template>
 
         <ng-template pTemplate="footer">
-            <p-button label="Cancelar" icon="pi pi-times" [text]="true" (onClick)="hideEventDialog()"></p-button>
-            <p-button [label]="eventForm.get('id')?.value ? 'Actualizar' : 'Guardar'" icon="pi pi-check" [text]="true" (onClick)="saveEvent()"></p-button>
+            <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="hideEventDialog()"></p-button>
+            <p-button [label]="eventForm.get('id')?.value ? 'Actualizar' : 'Guardar'" icon="pi pi-check" styleClass="!bg-[#08215C] !border-[#08215C]" [rounded]="true" (onClick)="saveEvent()"></p-button>
         </ng-template>
     </p-dialog>
 
-    <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+    <p-confirmDialog key="eventosConfirm" [style]="{ width: '450px' }" appendTo="body" styleClass="custom-dialog-header" acceptButtonStyleClass="!bg-[#08215C] !border-[#08215C]" rejectButtonStyleClass="p-button-text p-button-secondary"></p-confirmDialog>
 </div>

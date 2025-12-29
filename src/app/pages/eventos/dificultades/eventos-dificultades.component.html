@@ -2,7 +2,7 @@
 
 <div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-4rem)] flex flex-col">
   <p-toast></p-toast>
-  <p-confirmDialog key="eventosDificultadesConfirm" [style]="{ width: '450px' }" appendTo="body"></p-confirmDialog>
+  <p-confirmDialog key="eventosDificultadesConfirm" [style]="{ width: '450px' }" appendTo="body" styleClass="custom-dialog-header" acceptButtonStyleClass="!bg-[#08215C] !border-[#08215C]" rejectButtonStyleClass="p-button-text p-button-secondary"></p-confirmDialog>
 
   <div class="fade-in flex flex-col h-full">
     <div
@@ -83,12 +83,18 @@
     <p-dialog 
         [(visible)]="difficultyDialog" 
         [style]="{ width: '450px' }" 
-        header="Detalles de la Dificultad" 
         [modal]="true" 
         appendTo="body"
-        styleClass="p-fluid">
+        styleClass="p-fluid custom-dialog-header">
+        
+        <ng-template pTemplate="header">
+            <div class="flex justify-between items-center w-full">
+                <span class="text-xl font-bold text-white">Detalles de la Dificultad</span>
+            </div>
+        </ng-template>
+
         <ng-template pTemplate="content">
-            <div class="field mb-4">
+            <div class="field mb-4 mt-4">
                 <label for="dificultad" class="font-semibold block mb-2">Dificultad</label>
                 <p-dropdown 
                     [(ngModel)]="selectedDifficulty"
@@ -105,8 +111,8 @@
         </ng-template>
 
         <ng-template pTemplate="footer">
-            <p-button label="Cancelar" icon="pi pi-times" [text]="true" (onClick)="hideDialog()"></p-button>
-            <p-button label="Guardar" icon="pi pi-check" [text]="true" (onClick)="saveDifficulty()"></p-button>
+            <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="hideDialog()"></p-button>
+            <p-button label="Guardar" icon="pi pi-check" styleClass="!bg-[#08215C] !border-[#08215C]" [rounded]="true" (onClick)="saveDifficulty()"></p-button>
         </ng-template>
     </p-dialog> 
   </div>

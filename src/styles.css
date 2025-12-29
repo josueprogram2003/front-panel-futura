@@ -9,3 +9,43 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
+/* Custom Dialog Styles */
+.custom-dialog-header .p-dialog-header {
+    background-color: #2B7FFF !important;
+    color: white !important;
+}
+
+.custom-dialog-header .p-dialog-header-icons .p-dialog-header-icon {
+    color: white !important;
+}
+
+.custom-dialog-header .p-dialog-header-icons .p-dialog-header-icon:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+/* Override form elements inside custom dialog to be blue instead of primary (green) */
+.custom-dialog-header .p-checkbox-box.p-highlight {
+    background: #2B7FFF !important;
+    border-color: #2B7FFF !important;
+}
+
+.custom-dialog-header .p-radiobutton-box.p-highlight {
+    background: #2B7FFF !important;
+    border-color: #2B7FFF !important;
+}
+
+.custom-dialog-header .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+    background: #2B7FFF !important;
+}
+
+.custom-dialog-header .p-toggleswitch.p-toggleswitch-checked .p-toggleswitch-slider {
+    background: #2B7FFF !important;
+}
+
+/* Ensure dropdown highlight is blue if needed, though usually it's list item highlight */
+.custom-dialog-header .p-dropdown-item.p-highlight {
+    background: #eff6ff !important; /* blue-50 */
+    color: #1e40af !important; /* blue-800 */
+}

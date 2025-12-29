@@ -1,6 +1,6 @@
 <div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-4rem)] flex flex-col">
     <p-toast></p-toast>
-    <p-confirmDialog key="eventosPreguntasConfirm" [style]="{ width: '450px' }" appendTo="body"></p-confirmDialog>
+    <p-confirmDialog key="eventosPreguntasConfirm" [style]="{ width: '450px' }" appendTo="body" styleClass="custom-dialog-header" acceptButtonStyleClass="!bg-[#08215C] !border-[#08215C]" rejectButtonStyleClass="p-button-text p-button-secondary"></p-confirmDialog>
     <div class="fade-in flex flex-col h-full">
         <div class="flex-none flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
             <div>
@@ -50,7 +50,7 @@
                         <th style="width: 40%" class="!text-center !bg-[#2B7FFF] !text-white">Pregunta</th>
                         <th style="width: 15%" class="!text-center !bg-[#2B7FFF] !text-white">Tipo</th>
                         <th style="width: 15%" class="!text-center !bg-[#2B7FFF] !text-white">Alternativas</th>
-                        <th style="width: 25%" class="text-center !bg-[#2B7FFF] !text-white">Acciones</th>
+                        <th style="width: 25%" class="!text-center !bg-[#2B7FFF] !text-white">Acciones</th>
                     </tr>
                 </ng-template>
                 
@@ -103,12 +103,18 @@
     <p-dialog 
         [(visible)]="questionDialog" 
         [style]="{ width: '800px' }" 
-        header="Detalles de la Pregunta" 
         [modal]="true" 
-        styleClass="p-fluid">
+        styleClass="p-fluid custom-dialog-header">
+        
+        <ng-template pTemplate="header">
+            <div class="flex justify-between items-center w-full">
+                <span class="text-xl font-bold text-white">Detalles de la Pregunta</span>
+            </div>
+        </ng-template>
+
         <ng-template pTemplate="content">
             <!-- Buffer display for new questions -->
-            <div *ngIf="newQuestionsBuffer.length > 0" class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+            <div *ngIf="newQuestionsBuffer.length > 0" class="mb-6 mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="font-bold text-blue-800">Preguntas listas para guardar ({{newQuestionsBuffer.length}})</h3>
                 </div>
@@ -128,7 +134,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4" [ngClass]="{'mt-4': newQuestionsBuffer.length === 0}">
                 <div class="col-span-2">
                     <label for="pregunta" class="font-semibold block mb-2">Pregunta</label>
                     <input type="text" pInputText id="pregunta" [(ngModel)]="pregunta.pregunta" placeholder="Ingresa pregunta" required autofocus class="w-full" />
@@ -143,7 +149,7 @@
             <div class="mt-6">
                 <div class="flex justify-between items-center mb-3">
                     <h3 class="font-bold text-lg">Alternativas</h3>
-                    <p-button *ngIf="pregunta.tipo !== 'vf'" label="Agregar Opción" icon="pi pi-plus" [text]="true" size="small" (onClick)="addAlternative()"></p-button>
+                    <p-button *ngIf="pregunta.tipo !== 'vf'" label="Agregar Opción" icon="pi pi-plus" [text]="true" size="small" severity="secondary" (onClick)="addAlternative()" styleClass="!text-[#08215C]"></p-button>
                 </div>
 
                 <div *ngFor="let alt of pregunta.alternativas; let i = index" class="flex items-center gap-3 mb-3 p-3 bg-slate-50 rounded border border-slate-200">
@@ -163,11 +169,11 @@
         <ng-template pTemplate="footer">
             <div class="flex justify-between w-full">
                 <div class="flex gap-2">
-                    <p-button *ngIf="pregunta.id === 0" label="Agregar otra" icon="pi pi-plus" styleClass="p-button-outlined" (onClick)="addToBuffer()"></p-button>
+                    <p-button *ngIf="pregunta.id === 0" label="Agregar otra" icon="pi pi-plus" severity="secondary" styleClass="p-button-outlined !text-[#08215C] !border-[#08215C]" (onClick)="addToBuffer()"></p-button>
                 </div>
                 <div class="flex gap-2">
-                    <p-button label="Cancelar" icon="pi pi-times" [text]="true" (onClick)="hideDialog()"></p-button>
-                    <p-button [label]="newQuestionsBuffer.length > 0 ? 'Guardar Todo (' + (newQuestionsBuffer.length + (pregunta.pregunta ? 1 : 0)) + ')' : 'Guardar'" icon="pi pi-check" [text]="true" (onClick)="saveQuestion()"></p-button>
+                    <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="hideDialog()"></p-button>
+                    <p-button [label]="newQuestionsBuffer.length > 0 ? 'Guardar Todo (' + (newQuestionsBuffer.length + (pregunta.pregunta ? 1 : 0)) + ')' : 'Guardar'" icon="pi pi-check" styleClass="!bg-[#08215C] !border-[#08215C]" [rounded]="true" (onClick)="saveQuestion()"></p-button>
                 </div>
             </div>
         </ng-template>
