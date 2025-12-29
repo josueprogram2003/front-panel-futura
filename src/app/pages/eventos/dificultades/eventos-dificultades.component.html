@@ -95,7 +95,7 @@
 
         <ng-template pTemplate="content">
             <div class="field mb-4 mt-4">
-                <label for="dificultad" class="font-semibold block mb-2">Dificultad</label>
+                <label for="dificultad" class="font-semibold block mb-2 text-slate-700">Dificultad <span class="text-red-500">*</span></label>
                 <p-dropdown 
                     [(ngModel)]="selectedDifficulty"
                     [options]="dificultades" 
@@ -104,9 +104,13 @@
                     placeholder="Seleccione una dificultad"
                     [showClear]="true"
                     appendTo="body"
-                    [style]="{'width':'100%'}">
+                    [style]="{'width':'100%'}"
+                    [ngClass]="{'ng-invalid ng-dirty': submitted && !selectedDifficulty}">
                 </p-dropdown>
-                <small class="p-error block" *ngIf="submitted && !selectedDifficulty">La dificultad es requerida.</small>
+                <div *ngIf="submitted && !selectedDifficulty" class="flex items-center gap-2 mt-2 text-red-500 bg-red-50 px-3 py-2 rounded-lg border border-red-100 fade-in transition-all">
+                    <i class="pi pi-exclamation-circle text-sm"></i>
+                    <span class="text-sm font-medium">La dificultad es requerida.</span>
+                </div>
             </div>
         </ng-template>
 

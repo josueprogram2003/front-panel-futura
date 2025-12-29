@@ -164,14 +164,45 @@ export class EventosPreguntasComponent implements OnInit {
     this.submitted = false;
   }
 
+  hasCorrectAnswer(): boolean {
+    if (!this.pregunta.alternativas) return false;
+    return this.pregunta.alternativas.some(a => a.respuesta_correcta);
+  }
+
+  validateQuestion(): boolean {
+    // 1. Validar texto de la pregunta
+    if (!this.pregunta.pregunta?.trim()) {
+      return false;
+    }
+
+    // 2. Validar alternativas
+    if (!this.pregunta.alternativas || this.pregunta.alternativas.length === 0) {
+      return false;
+    }
+
+    // 3. Validar que todas las alternativas tengan texto (solo para opción múltiple)
+    if (this.pregunta.tipo === 'alternativa') {
+        const invalidAlt = this.pregunta.alternativas.some(alt => !alt.texto?.trim());
+        if (invalidAlt) return false;
+    }
+
+    // 4. Validar que haya al menos una respuesta correcta
+    const hasCorrect = this.pregunta.alternativas.some(alt => alt.respuesta_correcta);
+    if (!hasCorrect) return false;
+
+    return true;
+  }
+
   addToBuffer() {
     this.submitted = true;
-    if (this.pregunta.pregunta?.trim()) {
+    if (this.validateQuestion()) {
         this.pregunta.evento_dificultad_id = this.dificultadEventoId;
         this.newQuestionsBuffer.push({...this.pregunta});
         this.pregunta = this.createEmptyQuestion();
         this.submitted = false;
         this.messageService.add({ severity: 'info', summary: 'Agregada', detail: 'Pregunta agregada a la lista para guardar' });
+    } else {
+        this.messageService.add({ severity: 'warn', summary: 'Incompleto', detail: 'Complete todos los campos requeridos y seleccione una respuesta correcta.' });
     }
   }
 
@@ -180,7 +211,7 @@ export class EventosPreguntasComponent implements OnInit {
   }
 
   editFromBuffer(index: number) {
-      if (this.pregunta.pregunta?.trim()) {
+      if (this.validateQuestion()) {
           this.addToBuffer();
       }
       // Si la pregunta actual sigue teniendo datos (no se pudo agregar al buffer), 
@@ -196,7 +227,17 @@ export class EventosPreguntasComponent implements OnInit {
     this.submitted = true;
 
     // Check if we have anything to save: either buffer is not empty OR current form is valid
-    const hasCurrent = !!this.pregunta.pregunta?.trim();
+    const isCurrentValid = this.validateQuestion();
+    // Si hay algo escrito pero no es válido, detener.
+    // Excepción: si está vacío completamente (usuario solo quería guardar el buffer)
+    const isCurrentEmpty = !this.pregunta.pregunta?.trim(); 
+
+    if (!isCurrentValid && !isCurrentEmpty) {
+        this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'La pregunta actual está incompleta. Complétela o bórrela antes de guardar.' });
+        return;
+    }
+
+    const hasCurrent = isCurrentValid;
     const hasBuffer = this.newQuestionsBuffer.length > 0;
 
     if (hasCurrent || hasBuffer) {

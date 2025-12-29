@@ -137,32 +137,43 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4" [ngClass]="{'mt-4': newQuestionsBuffer.length === 0}">
                 <div class="col-span-2">
-                    <label for="pregunta" class="font-semibold block mb-2">Pregunta</label>
-                    <input type="text" pInputText id="pregunta" [(ngModel)]="pregunta.pregunta" placeholder="Ingresa pregunta" required autofocus class="w-full" />
-                    <small class="p-error block" *ngIf="submitted && !pregunta.pregunta">La pregunta es requerida.</small>
+                    <label for="pregunta" class="font-semibold block mb-2 text-slate-700">Pregunta <span class="text-red-500">*</span></label>
+                    <input type="text" pInputText id="pregunta" [(ngModel)]="pregunta.pregunta" placeholder="Ingresa pregunta" required autofocus class="w-full" [ngClass]="{'ng-invalid ng-dirty': submitted && !pregunta.pregunta?.trim()}" />
+                    <div *ngIf="submitted && !pregunta.pregunta?.trim()" class="flex items-center gap-2 mt-2 text-red-500 bg-red-50 px-3 py-2 rounded-lg border border-red-100 fade-in transition-all">
+                        <i class="pi pi-exclamation-circle text-sm"></i>
+                        <span class="text-sm font-medium">La pregunta es requerida.</span>
+                    </div>
                 </div>
                 <div>
-                    <label for="tipo" class="font-semibold block mb-2">Tipo</label>
+                    <label for="tipo" class="font-semibold block mb-2 text-slate-700">Tipo</label>
                     <p-dropdown [options]="tiposPregunta" [(ngModel)]="pregunta.tipo" (onChange)="onTypeChange()" optionLabel="label" optionValue="value" placeholder="Seleccionar" appendTo="body"></p-dropdown>
                 </div>
             </div>
 
             <div class="mt-6">
                 <div class="flex justify-between items-center mb-3">
-                    <h3 class="font-bold text-lg">Alternativas</h3>
+                    <h3 class="font-bold text-lg text-slate-800">Alternativas <span class="text-red-500">*</span></h3>
                     <p-button *ngIf="pregunta.tipo !== 'vf'" label="Agregar Opción" icon="pi pi-plus" [text]="true" size="small" severity="secondary" (onClick)="addAlternative()" styleClass="!text-[#08215C]"></p-button>
                 </div>
 
-                <div *ngFor="let alt of pregunta.alternativas; let i = index" class="flex items-center gap-3 mb-3 p-3 bg-slate-50 rounded border border-slate-200">
-                    <span class="font-bold text-slate-500 w-8 text-center">{{ alt.opcion }}</span>
-                    <div class="flex-grow">
-                        <input type="text" pInputText [(ngModel)]="alt.texto" [readonly]="pregunta.tipo === 'vf'" placeholder="Texto de la opción" class="w-full" />
+                <div *ngIf="submitted && !hasCorrectAnswer()" class="flex items-center gap-2 mb-4 text-red-500 bg-red-50 px-3 py-2 rounded-lg border border-red-100 fade-in transition-all">
+                    <i class="pi pi-exclamation-circle text-sm"></i>
+                    <span class="text-sm font-medium">Debe seleccionar al menos una respuesta correcta.</span>
+                </div>
+
+                <div *ngFor="let alt of pregunta.alternativas; let i = index" class="flex flex-col gap-1 mb-3">
+                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded border border-slate-200" [ngClass]="{'border-red-300 bg-red-50': submitted && pregunta.tipo === 'alternativa' && !alt.texto?.trim()}">
+                        <span class="font-bold text-slate-500 w-8 text-center">{{ alt.opcion }}</span>
+                        <div class="flex-grow">
+                            <input type="text" pInputText [(ngModel)]="alt.texto" [readonly]="pregunta.tipo === 'vf'" placeholder="Texto de la opción" class="w-full" [ngClass]="{'ng-invalid ng-dirty': submitted && pregunta.tipo === 'alternativa' && !alt.texto?.trim()}" />
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <p-checkbox [(ngModel)]="alt.respuesta_correcta" [binary]="true" (onChange)="onCorrectAnswerChange(i)"></p-checkbox>
+                            <span class="text-sm">Correcta</span>
+                        </div>
+                        <p-button *ngIf="pregunta.tipo !== 'vf'" icon="pi pi-trash" [text]="true" severity="danger" (onClick)="removeAlternative(i)"></p-button>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <p-checkbox [(ngModel)]="alt.respuesta_correcta" [binary]="true" (onChange)="onCorrectAnswerChange(i)"></p-checkbox>
-                        <span class="text-sm">Correcta</span>
-                    </div>
-                    <p-button *ngIf="pregunta.tipo !== 'vf'" icon="pi pi-trash" [text]="true" severity="danger" (onClick)="removeAlternative(i)"></p-button>
+                    <small *ngIf="submitted && pregunta.tipo === 'alternativa' && !alt.texto?.trim()" class="text-red-500 text-xs ml-14">El texto de la alternativa es requerido.</small>
                 </div>
             </div>
         </ng-template>

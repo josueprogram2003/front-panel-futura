@@ -40,7 +40,6 @@
                 <tr>
                     <th style="width: 5rem" class="!text-center !bg-[#2B7FFF] !text-white">ID</th>
                     <th pSortableColumn="nombre" class="!text-center !bg-[#2B7FFF] !text-white">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
-                    <th class="!text-center !bg-[#2B7FFF] !text-white">Estado</th>
                     <th style="width: 10rem" class="!text-center !bg-[#2B7FFF] !text-white">Acciones</th>
                 </tr>
             </ng-template>
@@ -48,11 +47,6 @@
                 <tr>
                     <td class="!text-center">{{rowIndex + 1}}</td>
                     <td class="!text-center"><span class="font-medium">{{dificultad.nombre}}</span></td>
-                    <td class="!text-center">
-                        <span [class]="'px-2 py-1 rounded text-xs font-semibold ' + (dificultad.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')">
-                            {{dificultad.isActive ? 'Activo' : 'Inactivo'}}
-                        </span>
-                    </td>
                     <td class="!text-center">
                         <div class="flex gap-2 justify-center">
                             <p-button 
@@ -101,9 +95,12 @@
         <ng-template pTemplate="content">
             <div class="relative mt-4" [formGroup]="dificultadForm">
                 <div class="field mb-4">
-                    <label for="nombre" class="font-semibold block mb-2">Nombre</label>
-                    <input type="text" class="w-full" pInputText id="nombre" formControlName="nombre" required autofocus />
-                    <small class="p-error block" *ngIf="submitted && difficultyNameControl?.invalid">El nombre es requerido.</small>
+                    <label for="nombre" class="font-semibold block mb-2 text-slate-700">Nombre <span class="text-red-500">*</span></label>
+                    <input type="text" class="w-full" pInputText id="nombre" formControlName="nombre" required autofocus [ngClass]="{'ng-invalid ng-dirty': submitted && difficultyNameControl?.invalid}" />
+                    <div *ngIf="submitted && difficultyNameControl?.invalid" class="flex items-center gap-2 mt-2 text-red-500 bg-red-50 px-3 py-2 rounded-lg border border-red-100 fade-in transition-all">
+                        <i class="pi pi-exclamation-circle text-sm"></i>
+                        <span class="text-sm font-medium">El nombre es requerido.</span>
+                    </div>
                 </div>
             </div>
         </ng-template>

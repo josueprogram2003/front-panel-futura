@@ -43,7 +43,7 @@
                 
                 <ng-template pTemplate="header">
                 <tr>
-                    <th  style="width:5%" class="!text-center !bg-[#2B7FFF] !text-white"># <p-sortIcon field="nombre"></p-sortIcon></th>
+                    <th  style="width:5%" class="!text-center !bg-[#2B7FFF] !text-white">#</th>
                     <th pSortableColumn="nombre" style="width:30%" class="!text-center !bg-[#2B7FFF] !text-white">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
                     <th pSortableColumn="fecha" style="width:20%" class="!text-center !bg-[#2B7FFF] !text-white">Fecha <p-sortIcon field="fecha"></p-sortIcon></th>
                     <th pSortableColumn="descripcion" style="width:30%" class="!text-center !bg-[#2B7FFF] !text-white">Descripción <p-sortIcon field="descripcion"></p-sortIcon></th>
@@ -65,7 +65,7 @@
                     </td>
                     <td class="text-slate-500 !text-center">{{ evento.descripcion || 'Sin descripción' }}</td>
                     <td class="!text-center">
-                        <div class="flex justify-center items-center" (mousedown)="onPredeterminadoClick($event, evento)">
+                        <div class="flex justify-center items-center mt-2" (mousedown)="onPredeterminadoClick($event, evento)">
                             <p-toggleswitch 
                                 [ngModel]="evento.isPredeterminadoBoolean" 
                                 [pTooltip]="evento.isPredeterminadoBoolean ? 'Desactivar Predeterminado' : 'Activar Predeterminado'" 
@@ -161,19 +161,24 @@
         <ng-template pTemplate="content">
             <form [formGroup]="eventForm" class="flex flex-col gap-4 mt-4">
                 <div class="field">
-                    <label for="nombre" class="font-semibold block mb-2">Nombre <span class="text-red-500">*</span></label>
-                    <input type="text" pInputText id="nombre" formControlName="nombre" class="w-full" autofocus />
-                    <small class="p-error block" *ngIf="submitted && eventForm.get('nombre')?.invalid">El nombre es requerido.</small>
+                    <label for="nombre" class="font-semibold block mb-2 text-slate-700">Nombre <span class="text-red-500">*</span></label>
+                    <input type="text" pInputText id="nombre" formControlName="nombre" class="w-full" [ngClass]="{'ng-invalid ng-dirty': submitted && eventForm.get('nombre')?.invalid}" autofocus />
+                    <div *ngIf="submitted && eventForm.get('nombre')?.invalid" class="flex items-center gap-2 mt-2 text-red-500 bg-red-50 px-3 py-2 rounded-lg border border-red-100 fade-in transition-all">
+                        <i class="pi pi-exclamation-circle text-sm"></i>
+                        <span class="text-sm font-medium">El nombre del evento es requerido.</span>
+                    </div>
                 </div>
                 <div class="field">
-                    <label for="descripcion" class="font-semibold block mb-2">Descripción</label>
+                    <label for="descripcion" class="font-semibold block mb-2 text-slate-700">Descripción</label>
                     <textarea id="descripcion" pInputText formControlName="descripcion" rows="3" class="w-full p-2 border rounded"></textarea>
-                    <small class="p-error block" *ngIf="submitted && eventForm.get('descripcion')?.invalid">La descripción es requerida.</small>
                 </div>
                 <div class="field">
-                    <label for="fecha" class="font-semibold block mb-2">Fecha <span class="text-red-500">*</span></label>
-                    <input type="date" pInputText id="fecha" formControlName="fecha" class="w-full" />
-                    <small class="p-error block" *ngIf="submitted && eventForm.get('fecha')?.invalid">La fecha es requerida.</small>
+                    <label for="fecha" class="font-semibold block mb-2 text-slate-700">Fecha <span class="text-red-500">*</span></label>
+                    <input type="date" pInputText id="fecha" formControlName="fecha" class="w-full" [ngClass]="{'ng-invalid ng-dirty': submitted && eventForm.get('fecha')?.invalid}" />
+                    <div *ngIf="submitted && eventForm.get('fecha')?.invalid" class="flex items-center gap-2 mt-2 text-red-500 bg-red-50 px-3 py-2 rounded-lg border border-red-100 fade-in transition-all">
+                        <i class="pi pi-exclamation-circle text-sm"></i>
+                        <span class="text-sm font-medium">La fecha del evento es requerida.</span>
+                    </div>
                 </div>
                 <div class="field flex items-center gap-3 mt-2">
                     <p-toggleswitch formControlName="isPredeterminado" inputId="isPredeterminado"></p-toggleswitch>
