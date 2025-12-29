@@ -84,7 +84,7 @@ export class EventosComponent implements OnInit {
       id: [0],
       nombre: ['', Validators.required],
       descripcion: [''],
-      fecha: [''],
+      fecha: ['', Validators.required],
       isPredeterminado: [false]
     });
   }
