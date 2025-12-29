@@ -44,9 +44,9 @@
                     <th style="width: 10rem" class="!text-center !bg-[#2B7FFF] !text-white">Acciones</th>
                 </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-dificultad>
+            <ng-template pTemplate="body" let-dificultad let-rowIndex="rowIndex">
                 <tr>
-                    <td class="!text-center">{{dificultad.id}}</td>
+                    <td class="!text-center">{{rowIndex + 1}}</td>
                     <td class="!text-center"><span class="font-medium">{{dificultad.nombre}}</span></td>
                     <td class="!text-center">
                         <span [class]="'px-2 py-1 rounded text-xs font-semibold ' + (dificultad.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')">

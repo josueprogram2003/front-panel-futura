@@ -6,7 +6,7 @@
         <p class="text-slate-500 mt-1">Ajusta los parámetros del sistema</p>
     </div>
 
-    <p-tabView styleClass="w-full">
+    <p-tabView styleClass="w-full custom-tabs">
         <!-- Tab: Totem Fotográfico -->
         <p-tabPanel header="Totem Fotográfico" leftIcon="pi pi-camera">
             <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 mt-4">                
@@ -81,6 +81,6 @@
 
     <div class="mt-8 flex justify-end gap-3 max-w-4xl border-t border-slate-100 pt-6">
         <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary"></p-button>
-        <p-button label="Guardar Cambios" icon="pi pi-check" (onClick)="saveConfig()"></p-button>
+        <p-button label="Guardar Cambios" icon="pi pi-check" styleClass="!bg-[#08215C] !border-[#08215C]" [rounded]="true" (onClick)="saveConfig()"></p-button>
     </div>
 </div>
