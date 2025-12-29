@@ -45,6 +45,18 @@ import { LoadingOverlayComponent } from '../../shared/components/loading-overlay
     :host ::ng-deep .p-dialog .p-button {
       min-width: 6rem;
     }
+    :host ::ng-deep .status-switch.p-toggleswitch.p-disabled {
+      opacity: 1 !important;
+    }
+    :host ::ng-deep .p-toggleswitch.p-disabled .p-toggleswitch-handle {
+      background:  #ffffff !important;
+    }
+    :host ::ng-deep .status-switch.p-toggleswitch.p-disabled .p-toggleswitch-slider {
+      background: #22c55e !important;
+    }
+    :host ::ng-deep .status-switch.p-toggleswitch.p-disabled .p-toggleswitch-slider:before {
+      background: #ffffff !important;
+    }
     .fade-in {
       animation: fadeIn 0.3s ease-in;
     }
@@ -73,7 +85,8 @@ export class EventosComponent implements OnInit {
       id: [0],
       nombre: ['', Validators.required],
       descripcion: [''],
-      fecha: ['']
+      fecha: [''],
+      isPredeterminado: [false]
     });
   }
 
@@ -85,10 +98,10 @@ export class EventosComponent implements OnInit {
     this.loading = true;
     try {
       const res = await firstValueFrom(this.eventoService.getEventos());
-      // Convert isVisible number to boolean for UI
       this.eventos = res.response.map(e => ({
         ...e,
-        isActiveBoolean: e.isVisible === 1 
+        isActiveBoolean: e.isVisible === 1,
+        isPredeterminadoBoolean: e.isPredeterminado === true || e.isPredeterminado === (1 as any)
       })) as any[];
       this.loading = false;
     } catch (error) {
@@ -107,7 +120,8 @@ export class EventosComponent implements OnInit {
       id: 0,
       nombre: '',
       descripcion: '',
-      fecha: ''
+      fecha: '',
+      isPredeterminado: false
     });
     this.submitted = false;
     this.eventDialog = true;
@@ -218,6 +232,45 @@ export class EventosComponent implements OnInit {
 
   toggleVisibility(evento: Evento) {
      // Deprecated in favor of switch
+  }
+
+  onPredeterminadoChange(evento: any) {
+    // Capture original state before the toggle happened
+    // Since ngModel already updated it, !value is the original
+    const originalValue = !evento.isPredeterminadoBoolean;
+
+    // Revert immediately to wait for confirmation
+    evento.isPredeterminadoBoolean = originalValue;
+
+    // If we are trying to deactivate (original was true), we probably shouldn't allow it
+    // if the API only supports setting a NEW default. 
+    // Assuming similar behavior to Visibility: "You must select another event to be default"
+    if (originalValue) {
+       this.messageService.add({ severity: 'warn', summary: 'Aviso', detail: 'Debes marcar otro evento como predeterminado para cambiarlo.' });
+       return;
+    }
+
+    this.confirmationService.confirm({
+      message: `¿Deseas marcar el evento "${evento.nombre}" como predeterminado?`,
+      header: 'Confirmar Predeterminado',
+      icon: 'pi pi-star',
+      accept: async () => {
+        this.loading = true;
+        try {
+          await firstValueFrom(this.eventoService.setEventoPredeterminado(evento.id));
+          this.loading = false;
+          this.loadEventos();
+          this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Evento predeterminado actualizado', life: 3000 });
+        } catch (err: any) {
+          this.loading = false;
+          evento.isPredeterminadoBoolean = originalValue; // Keep original on error
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al actualizar' });
+        }
+      },
+      reject: () => {
+        evento.isPredeterminadoBoolean = originalValue; // Keep original on reject
+      }
+    });
   }
 
   hideEventDialog() {

@@ -65,20 +65,22 @@
                     <td class="text-center">
                         <div class="flex justify-start items-center">
                             <p-toggleswitch 
-                                [(ngModel)]="evento.isPredeterminado" 
-                                (onChange)="onVisibilityChange(evento)"
-                                [pTooltip]="evento.isPredeterminado ? 'Desactivar Predeterminado' : 'Activar Predeterminado'" 
+                                [(ngModel)]="evento.isPredeterminadoBoolean" 
+                                (onChange)="onPredeterminadoChange(evento)"
+                                [pTooltip]="evento.isPredeterminadoBoolean ? 'Desactivar Predeterminado' : 'Activar Predeterminado'" 
                                 tooltipPosition="top">
                             </p-toggleswitch>
                         </div>
                     </td>
                     <td class="text-center">
-                        <div class="flex justify-start items-center">
+                        <div class="flex justify-center items-center" 
+                             [pTooltip]="evento.isActiveBoolean ? 'Evento Activo' : 'Activar Evento'" 
+                             tooltipPosition="top">
                             <p-toggleswitch 
+                                styleClass="status-switch"
                                 [(ngModel)]="evento.isActiveBoolean" 
                                 (onChange)="onVisibilityChange(evento)"
-                                [pTooltip]="evento.isActiveBoolean ? 'Desactivar Evento' : 'Activar Evento'" 
-                                tooltipPosition="top">
+                                [disabled]="evento.isActiveBoolean">
                             </p-toggleswitch>
                         </div>
                     </td>
@@ -167,6 +169,10 @@
                     <label for="fecha" class="font-semibold block mb-2">Fecha</label>
                     <input type="date" pInputText id="fecha" formControlName="fecha" class="w-full" />
                     <small class="p-error block" *ngIf="submitted && eventForm.get('fecha')?.invalid">La fecha es requerida.</small>
+                </div>
+                <div class="field flex items-center gap-3 mt-2" *ngIf="!eventForm.get('id')?.value">
+                    <p-toggleswitch formControlName="isPredeterminado" inputId="isPredeterminado"></p-toggleswitch>
+                    <label for="isPredeterminado" class="font-semibold cursor-pointer">Marcar como Predeterminado</label>
                 </div>
             </form>
         </ng-template>

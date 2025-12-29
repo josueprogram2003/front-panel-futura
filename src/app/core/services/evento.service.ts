@@ -37,6 +37,10 @@ export class EventoService {
     return this.http.put<ApiResponse<void>>(`${this.apiUrl}/eventos/${id}/visible`, {});
   }
 
+  setEventoPredeterminado(id: number): Observable<ApiResponse<void>> {
+    return this.http.put<ApiResponse<void>>(`${this.apiUrl}/eventos/${id}/predeterminado`, {});
+  }
+
   // Dificultades Globales
   getDificultades(): Observable<ApiResponse<Dificultad[]>> {
     return this.http.get<ApiResponse<Dificultad[]>>(`${this.apiUrl}/dificultades`);
