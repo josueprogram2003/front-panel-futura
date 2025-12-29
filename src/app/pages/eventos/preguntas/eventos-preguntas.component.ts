@@ -322,6 +322,16 @@ export class EventosPreguntasComponent implements OnInit {
     });
   }
 
+  onCorrectAnswerChange(index: number) {
+    if (this.pregunta.alternativas) {
+        this.pregunta.alternativas.forEach((alt, i) => {
+            if (i !== index) {
+                alt.respuesta_correcta = false;
+            }
+        });
+    }
+  }
+
   createEmptyQuestion(): Pregunta {
     return {
       id: 0,

@@ -131,7 +131,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div class="col-span-2">
                     <label for="pregunta" class="font-semibold block mb-2">Pregunta</label>
-                    <input type="text" pInputText id="pregunta" [(ngModel)]="pregunta.pregunta" required autofocus class="w-full" />
+                    <input type="text" pInputText id="pregunta" [(ngModel)]="pregunta.pregunta" placeholder="Ingresa pregunta" required autofocus class="w-full" />
                     <small class="p-error block" *ngIf="submitted && !pregunta.pregunta">La pregunta es requerida.</small>
                 </div>
                 <div>
@@ -152,7 +152,7 @@
                         <input type="text" pInputText [(ngModel)]="alt.texto" [readonly]="pregunta.tipo === 'vf'" placeholder="Texto de la opción" class="w-full" />
                     </div>
                     <div class="flex items-center gap-2">
-                        <p-checkbox [(ngModel)]="alt.respuesta_correcta" [binary]="true"></p-checkbox>
+                        <p-checkbox [(ngModel)]="alt.respuesta_correcta" [binary]="true" (onChange)="onCorrectAnswerChange(i)"></p-checkbox>
                         <span class="text-sm">Correcta</span>
                     </div>
                     <p-button *ngIf="pregunta.tipo !== 'vf'" icon="pi pi-trash" [text]="true" severity="danger" (onClick)="removeAlternative(i)"></p-button>

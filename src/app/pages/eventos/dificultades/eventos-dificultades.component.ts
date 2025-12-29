@@ -80,7 +80,6 @@ export class EventosDificultadesComponent implements OnInit {
               let cantidad = 0;
               try {
                    const res = await firstValueFrom(this.eventoService.getPreguntasCountByEventoId(this.eventoId));
-                   console.log(res);
                    cantidad = res.response?.cantidad || 0;
               } catch (e) {
                    console.error('Error al obtener cantidad de preguntas', e);
@@ -99,12 +98,14 @@ export class EventosDificultadesComponent implements OnInit {
                   dificultad: defaultDiff,
                   cantidad_preguntas: cantidad
               }];
-              console.log(this.dificultadesEventos);
           } else {
               // Load existing difficulties
               await this.loadDificultadByEventoId(this.eventoId || 0);
               // Load catalog
               await this.getDificultades();
+
+              // Remove any "Predeterminado" difficulty from the list if it accidentally appears
+              this.dificultadesEventos = this.dificultadesEventos.filter(ed => ed.dificultad.nombre.toLowerCase() !== 'predeterminado');
           }
 
         } finally {
