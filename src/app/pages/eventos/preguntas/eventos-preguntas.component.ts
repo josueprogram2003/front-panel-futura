@@ -52,6 +52,7 @@ export class EventosPreguntasComponent implements OnInit {
   message: string = '';
   difficultyName: string = '';
   newQuestionsBuffer: Pregunta[] = [];
+  isPredeterminado: boolean | null = null;
 
   tiposPregunta = [
     { label: 'Alternativa Múltiple', value: 'alternativa' },
@@ -81,6 +82,9 @@ export class EventosPreguntasComponent implements OnInit {
             if (state.eventName) {
                 this.evento = { id: this.eventoId, nombre: state.eventName, isActive: true, descripcion: '' };
             }
+            if (state.isPredeterminado !== undefined) {
+                this.isPredeterminado = state.isPredeterminado;
+            }
         }
 
         this.loadData();
@@ -91,7 +95,12 @@ export class EventosPreguntasComponent implements OnInit {
   async loadData() {
     this.loading = true;
     try {
-      this.preguntas = await firstValueFrom(this.eventoService.getEventosDificultadesPreguntasByEventoDificultadId(this.dificultadEventoId)).then(res => res.response);
+      if (this.isPredeterminado) {
+         this.preguntas = await firstValueFrom(this.eventoService.getPreguntasByEventoIdCompleto(this.eventoId)).then(res => res.response);
+      } else {
+         this.preguntas = await firstValueFrom(this.eventoService.getEventosDificultadesPreguntasByEventoDificultadId(this.dificultadEventoId)).then(res => res.response);
+      }
+
       this.evento = await firstValueFrom(this.eventoService.getEventoById(this.eventoId)).then(res => res.response);
       this.loading = false;
     } catch (err) {

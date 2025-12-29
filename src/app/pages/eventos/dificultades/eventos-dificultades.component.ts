@@ -59,12 +59,54 @@ export class EventosDificultadesComponent implements OnInit {
       const id = params.get('id');
       if (id) {
         this.eventoId = Number(id);
+        
+        // 1. Check for state passed from previous route
+        const state = history.state;
+        if (state && state.eventoData) {
+            this.evento = state.eventoData;
+        }
+
         this.loading = true;
         this.message = 'Cargando información del evento...';
         try {
-          await this.loadDificultadByEventoId(this.eventoId || 0);
-          await this.getEvento(this.eventoId || 0);
-          await this.getDificultades();
+          // If event wasn't passed in state, fetch it
+          if (!this.evento) {
+             await this.getEvento(this.eventoId || 0);
+          }
+
+          const isPredeterminado = this.evento?.isPredeterminado === true || this.evento?.isPredeterminado === (1 as any);
+          console.log('Evento predeterminado:', isPredeterminado);
+          if (isPredeterminado) {
+              let cantidad = 0;
+              try {
+                   const res = await firstValueFrom(this.eventoService.getPreguntasCountByEventoId(this.eventoId));
+                   console.log(res);
+                   cantidad = res.response?.cantidad || 0;
+              } catch (e) {
+                   console.error('Error al obtener cantidad de preguntas', e);
+              }
+
+              // Mock "Predeterminado" difficulty
+              const defaultDiff: Dificultad = {
+                  id: 0,
+                  nombre: 'Predeterminado',
+                  isActive: true
+              };
+              
+              this.dificultadesEventos = [{
+                  id: 0,
+                  evento: this.evento!,
+                  dificultad: defaultDiff,
+                  cantidad_preguntas: cantidad
+              }];
+              console.log(this.dificultadesEventos);
+          } else {
+              // Load existing difficulties
+              await this.loadDificultadByEventoId(this.eventoId || 0);
+              // Load catalog
+              await this.getDificultades();
+          }
+
         } finally {
           this.loading = false;
         }
@@ -100,10 +142,12 @@ export class EventosDificultadesComponent implements OnInit {
   }
 
   manageQuestions(eventoDificultad: any) {
+    const isPredeterminado = this.evento?.isPredeterminado === true || this.evento?.isPredeterminado === (1 as any);
     this.router.navigate(['/eventos', this.eventoId, 'dificultades', eventoDificultad.id, 'preguntas'], {
       state: { 
         difficultyName: eventoDificultad.dificultad.nombre,
-        eventName: this.evento?.nombre
+        eventName: this.evento?.nombre,
+        isPredeterminado: isPredeterminado ? true : null
       }
     });
   }

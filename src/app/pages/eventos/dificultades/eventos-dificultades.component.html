@@ -26,7 +26,7 @@
         </p>
       </div>
       <div class="flex gap-3">
-        <p-button label="Nueva Dificultad" icon="pi pi-plus" (onClick)="openNewDifficulty()"
+        <p-button *ngIf="!evento?.isPredeterminado" label="Nueva Dificultad" icon="pi pi-plus" (onClick)="openNewDifficulty()"
           styleClass="shadow-lg" [rounded]="true">
         </p-button>
       </div>
@@ -46,7 +46,7 @@
 
         <ng-template pTemplate="body" let-ed let-rowIndex="rowIndex">
           <tr>
-            <td class="text-slate-500 !text-center">{{ rowIndex +1 }}</td>
+            <td class="text-slate-500 !text-center">{{ rowIndex + 1 }}</td>
             <td class="font-medium text-slate-800 !text-center">{{ ed.dificultad?.nombre }}</td>
             <td class="!text-center">
               <span
@@ -59,12 +59,14 @@
                 <p-button icon="pi pi-list" [rounded]="true" [text]="true" severity="info" pTooltip="Ver Preguntas"
                   tooltipPosition="top" (onClick)="manageQuestions(ed)">
                 </p-button>
-                <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="secondary" pTooltip="Editar"
-                  tooltipPosition="top" (onClick)="editDifficulty(ed)">
-                </p-button>
-                <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Eliminar"
-                  tooltipPosition="top" (onClick)="deleteDifficulty(ed)">
-                </p-button>
+                <ng-container *ngIf="ed.id !== 0">
+                  <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="secondary" pTooltip="Editar"
+                    tooltipPosition="top" (onClick)="editDifficulty(ed)">
+                  </p-button>
+                  <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Eliminar"
+                    tooltipPosition="top" (onClick)="deleteDifficulty(ed)">
+                  </p-button>
+                </ng-container>
               </div>
             </td>
           </tr>

@@ -111,7 +111,11 @@ export class EventosComponent implements OnInit {
   }
 
   manageDifficulties(evento: Evento) {
-    this.router.navigate(['/eventos', evento.id, 'dificultades']);
+    this.router.navigate(['/eventos', evento.id, 'dificultades'], {
+      state: { 
+        eventoData: evento
+      }
+    });
   }
 
   openNewEvent() {

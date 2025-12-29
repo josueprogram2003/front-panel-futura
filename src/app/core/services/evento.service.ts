@@ -41,6 +41,14 @@ export class EventoService {
     return this.http.put<ApiResponse<void>>(`${this.apiUrl}/eventos/${id}/predeterminado`, {});
   }
 
+  getPreguntasCountByEventoId(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/preguntas/evento/${id}`);
+  }
+
+  getPreguntasByEventoIdCompleto(eventoId: number): Observable<ApiResponse<Pregunta[]>> {
+    return this.http.get<ApiResponse<Pregunta[]>>(`${this.apiUrl}/preguntas/evento/${eventoId}/completo`);
+  }
+
   // Dificultades Globales
   getDificultades(): Observable<ApiResponse<Dificultad[]>> {
     return this.http.get<ApiResponse<Dificultad[]>>(`${this.apiUrl}/dificultades`);
