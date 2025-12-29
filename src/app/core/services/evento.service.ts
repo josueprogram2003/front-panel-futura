@@ -98,8 +98,8 @@ export class EventoService {
     return this.http.post<ApiResponse<Pregunta>>(`${this.apiUrl}/preguntas`, pregunta);
   }
 
-  updatePreguntasMasivo(preguntas: Pregunta[]): Observable<ApiResponse<Pregunta[]>> {
-    return this.http.put<ApiResponse<Pregunta[]>>(`${this.apiUrl}/preguntas/update/masivo`, preguntas);
+  updatePreguntaCompleto(pregunta: Pregunta): Observable<ApiResponse<Pregunta>> {
+    return this.http.put<ApiResponse<Pregunta>>(`${this.apiUrl}/preguntas/${pregunta.id}/completo`, pregunta);
   }
 
   insertPreguntasMasivo(preguntas: Pregunta[]): Observable<ApiResponse<Pregunta[]>> {

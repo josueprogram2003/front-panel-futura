@@ -101,7 +101,7 @@ export class EventosPreguntasComponent implements OnInit {
          this.preguntas = await firstValueFrom(this.eventoService.getEventosDificultadesPreguntasByEventoDificultadId(this.dificultadEventoId)).then(res => res.response);
       }
 
-      this.evento = await firstValueFrom(this.eventoService.getEventoById(this.eventoId)).then(res => res.response);
+      // this.evento = await firstValueFrom(this.eventoService.getEventoById(this.eventoId)).then(res => res.response);
       this.loading = false;
     } catch (err) {
       this.loading = false;
@@ -216,9 +216,8 @@ export class EventosPreguntasComponent implements OnInit {
                 this.pregunta.evento_dificultad_id = this.dificultadEventoId;
 
                 if (isEdit) {
-                    // Update single (via bulk endpoint as requested)
-                    const payload = [this.pregunta];
-                    await firstValueFrom(this.eventoService.updatePreguntasMasivo(payload));
+                    // Update single (via specific endpoint as requested)
+                    await firstValueFrom(this.eventoService.updatePreguntaCompleto(this.pregunta));
                     
                     // Update local list
                     if (this.eventoDificultad?.preguntas) {
