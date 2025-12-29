@@ -196,12 +196,16 @@ export class EventosComponent implements OnInit {
     });
   }
 
-  onVisibilityChange(evento: any) {
-    const originalValue = !evento.isActiveBoolean;
-    if (originalValue === true) {
+  onVisibilityChange(event: MouseEvent, evento: any) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const newValue = !evento.isActiveBoolean;
+    if (!newValue) {
         this.messageService.add({ severity: 'warn', summary: 'Aviso', detail: 'Debes activar otro evento para cambiar el evento activo.' });
         return;
     }
+
     this.confirmationService.confirm({
       key: 'eventosConfirm',
       message: `¿Deseas marcar el evento "${evento.nombre}" como el evento visible principal? Esto ocultará los demás eventos.`,
@@ -209,50 +213,70 @@ export class EventosComponent implements OnInit {
       icon: 'pi pi-eye',
       accept: async () => {
         this.loading = true;
-        const originalValue = !evento.isActiveBoolean;
-        evento.isActiveBoolean = originalValue;
         try {
+          // Aplicar el nuevo valor si acepta
+          evento.isActiveBoolean = newValue;
           await firstValueFrom(this.eventoService.setEventoVisible(evento.id));
           this.loading = false;
           this.loadEventos();
           this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Visibilidad actualizada correctamente', life: 3000 });
         } catch (err: any) {
+          // Si falla, revertir (aunque ya loadEventos recargará)
+          evento.isActiveBoolean = !newValue;
           this.loading = false;
           this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al actualizar visibilidad' });
         }
       },
       reject: () => {
-          
+        // El valor ya fue revertido al inicio, no es necesario hacer nada
       }
     });
   }
 
-  onPredeterminadoChange(evento: any) {
+ onPredeterminadoClick(event: MouseEvent, evento: any) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const nuevoValor = !evento.isPredeterminadoBoolean;
+
     this.confirmationService.confirm({
       key: 'eventosConfirm',
-      message:!evento.isPredeterminadoBoolean
+      header: 'Confirmar Predeterminado',
+      message: nuevoValor
         ? `¿Deseas marcar el evento "${evento.nombre}" como predeterminado?`
         : `¿Deseas quitar el evento "${evento.nombre}" como predeterminado?`,
-      header: 'Confirmar Predeterminado',
       icon: 'pi pi-star',
+
       accept: async () => {
         this.loading = true;
         try {
-          const originalValue = !evento.isPredeterminadoBoolean;
-          evento.isPredeterminadoBoolean = originalValue;
-          await firstValueFrom(this.eventoService.setEventoPredeterminado(evento.id));
-          this.loading = false;
+          evento.isPredeterminadoBoolean = nuevoValor;
+
+          await firstValueFrom(
+            this.eventoService.setEventoPredeterminado(evento.id)
+          );
+
           this.loadEventos();
-          this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: 'Estado predeterminado actualizado', life: 3000 });
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Exitoso',
+            detail: 'Estado predeterminado actualizado',
+            life: 3000
+          });
         } catch (err: any) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error?.message || 'Error al actualizar'
+          });
+        } finally {
           this.loading = false;
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Error al actualizar' });
         }
-      },
-      reject: () => {    
       }
     });
   }
+
 
   hideEventDialog() {
     this.eventDialog = false;

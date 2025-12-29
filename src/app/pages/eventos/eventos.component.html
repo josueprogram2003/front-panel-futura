@@ -65,21 +65,19 @@
                     </td>
                     <td class="text-slate-500 !text-center">{{ evento.descripcion || 'Sin descripción' }}</td>
                     <td class="!text-center">
-                        <div class="flex justify-center items-center">
+                        <div class="flex justify-center items-center" (mousedown)="onPredeterminadoClick($event, evento)">
                             <p-toggleswitch 
                                 [ngModel]="evento.isPredeterminadoBoolean" 
-                                (click)="onPredeterminadoChange(evento)"
                                 [pTooltip]="evento.isPredeterminadoBoolean ? 'Desactivar Predeterminado' : 'Activar Predeterminado'" 
                                 tooltipPosition="top">
                             </p-toggleswitch>
                         </div>
                     </td>
                     <td class="!text-center">
-                        <div class="mt-2 flex justify-start items-center">
+                        <div class="mt-2 flex justify-start items-center" (mousedown)="onVisibilityChange($event, evento)">
                             <p-toggleswitch 
                                 styleClass="status-switch"
-                                [ngModel]="evento.isActiveBoolean" 
-                                (click)="onVisibilityChange(evento)"
+                                (ngModel)="evento.isActiveBoolean" 
                                 [disabled]="evento.isActiveBoolean">
                             </p-toggleswitch>
                         </div>
