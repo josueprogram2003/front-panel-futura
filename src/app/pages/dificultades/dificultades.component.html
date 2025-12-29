@@ -19,7 +19,7 @@
                     label="Nueva Dificultad" 
                     icon="pi pi-plus" 
                     (onClick)="openNewDificultad()"
-                    styleClass="p-button-primary shadow-lg shadow-indigo-500/30"
+                    styleClass="p-button-primary shadow-lg shadow-indigo-500/30 !bg-[#08215C] !border-[#08215C]"
                     [rounded]="true">
                 </p-button>
             </div>
@@ -38,7 +38,7 @@
                 
                 <ng-template pTemplate="header">
                 <tr>
-                    <th style="width: 2rem" class="!text-center !bg-[#2B7FFF] !text-white">ID</th>
+                    <th style="width: 5rem" class="!text-center !bg-[#2B7FFF] !text-white">ID</th>
                     <th pSortableColumn="nombre" class="!text-center !bg-[#2B7FFF] !text-white">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
                     <th class="!text-center !bg-[#2B7FFF] !text-white">Estado</th>
                     <th style="width: 10rem" class="!text-center !bg-[#2B7FFF] !text-white">Acciones</th>

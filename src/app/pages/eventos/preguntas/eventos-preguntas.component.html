@@ -26,7 +26,7 @@
                     label="Nueva Pregunta" 
                     icon="pi pi-plus" 
                     (onClick)="openNewQuestion()"
-                    styleClass="shadow-lg"
+                    styleClass="shadow-lg !bg-[#08215C] !border-[#08215C]"
                     [rounded]="true">
                 </p-button>
             </div>
@@ -46,32 +46,32 @@
                 
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 5rem">ID</th>
-                        <th style="width: 40%">Pregunta</th>
-                        <th style="width: 15%">Tipo</th>
-                        <th style="width: 15%">Alternativas</th>
-                        <th style="width: 25%" class="text-center">Acciones</th>
+                        <th style="width: 5rem" class="!text-center !bg-[#2B7FFF] !text-white">ID</th>
+                        <th style="width: 40%" class="!text-center !bg-[#2B7FFF] !text-white">Pregunta</th>
+                        <th style="width: 15%" class="!text-center !bg-[#2B7FFF] !text-white">Tipo</th>
+                        <th style="width: 15%" class="!text-center !bg-[#2B7FFF] !text-white">Alternativas</th>
+                        <th style="width: 25%" class="text-center !bg-[#2B7FFF] !text-white">Acciones</th>
                     </tr>
                 </ng-template>
                 
                 <ng-template pTemplate="body" let-pregunta let-rowIndex="rowIndex">
                     <tr>
-                        <td class="text-slate-500">{{ rowIndex + 1 }}</td>
-                        <td class="font-medium text-slate-800">{{ pregunta.pregunta }}</td>
-                        <td>
+                        <td class="text-slate-500 !text-center">{{ rowIndex + 1 }}</td>
+                        <td class="font-medium text-slate-800 !text-center">{{ pregunta.pregunta }}</td>
+                        <td class="!text-center">
                             <p-tag 
                                 [value]="pregunta.tipo === 'alternativa' ? 'Múltiple' : 'V/F'" 
                                 [severity]="pregunta.tipo === 'alternativa' ? 'info' : 'warn'"
                                 [rounded]="true">
                             </p-tag>
                         </td>
-                        <td>
+                        <td class="!text-center">
                             <span class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">
                                 {{ pregunta.alternativas.length }} opciones
                             </span>
                         </td>
-                        <td class="text-center">
-                            <div class="flex justify-start gap-2">
+                        <td class="text-center !text-center">
+                            <div class="flex justify-center gap-2">
                                 <p-button 
                                     icon="pi pi-pencil" 
                                     [rounded]="true" 
