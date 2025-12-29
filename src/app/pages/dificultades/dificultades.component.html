@@ -1,7 +1,7 @@
 <div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-4rem)] flex flex-col relative">
     <app-loading-overlay [loading]="loading" [message]="message"></app-loading-overlay>
     <p-toast></p-toast>
-    <p-confirmDialog key="dificultadesConfirm" [style]="{ width: '450px' }" styleClass="custom-dialog-header" acceptButtonStyleClass="!bg-[#08215C] !border-[#08215C]" rejectButtonStyleClass="p-button-text p-button-secondary"></p-confirmDialog>
+    <p-confirmDialog key="dificultadesConfirm" [style]="{ width: '450px' }" appendTo="body" styleClass="custom-dialog-header" acceptButtonStyleClass="!bg-[#08215C] !border-[#08215C]" rejectButtonStyleClass="p-button-text p-button-secondary"></p-confirmDialog>
 
     <div class="fade-in flex flex-col h-full">
         <!-- Professional Header -->
@@ -89,6 +89,7 @@
         [(visible)]="dificultadDialog" 
         [style]="{ width: '450px' }" 
         [modal]="true" 
+        appendTo="body"
         styleClass="p-fluid custom-dialog-header">
         
         <ng-template pTemplate="header">
