@@ -20,7 +20,6 @@ import { EventoService } from '../../core/services/evento.service';
 import { LoadingOverlayComponent } from '../../shared/components/loading-overlay/loading-overlay.component';
 
 @Component({
-  selector: 'app-eventos',
   standalone: true,
   imports: [
     CommonModule,
@@ -141,8 +140,8 @@ export class EventosComponent implements OnInit {
       }
     }
     // Asegurarse de que isPredeterminado sea booleano para el formulario
-    data.isPredeterminado = evento.isPredeterminado === true || evento.isPredeterminado === (1 as any);
-    
+    data.isPredeterminado = evento.isPredeterminado ? false : true;
+    console.log(data)
     this.eventForm.patchValue(data);
     this.eventDialog = true;
 
@@ -161,7 +160,8 @@ export class EventosComponent implements OnInit {
       }
       
       // Convertir isPredeterminado a boolean también para freshData
-      freshData.isPredeterminado = freshData.isPredeterminado === true || freshData.isPredeterminado === (1 as any);
+      const rawIsPred = freshData.isPredeterminado === true || freshData.isPredeterminado === (1 as any);
+      freshData.isPredeterminado = !rawIsPred;
 
       // Solo actualizar si el formulario no ha sido modificado por el usuario aún
       if (!this.eventForm.dirty) {
@@ -294,7 +294,10 @@ export class EventosComponent implements OnInit {
         accept: async () => {
           this.loading = true;
           try {
-            eventoData.isPredeterminado = true;
+            // Invertir valor para la API:
+            // Switch ON (true) = Tiene Dificultad = isPredeterminado FALSE
+            // Switch OFF (false) = No Tiene Dificultad = isPredeterminado TRUE
+            eventoData.isPredeterminado = !eventoData.isPredeterminado;
             const res = await firstValueFrom(this.eventoService.saveEvento(eventoData));
             this.loading = false;
             this.loadEventos(); 

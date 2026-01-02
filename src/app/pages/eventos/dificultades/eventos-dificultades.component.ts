@@ -76,6 +76,7 @@ export class EventosDificultadesComponent implements OnInit {
 
           const isPredeterminado = this.evento?.isPredeterminado === true || this.evento?.isPredeterminado === (1 as any);
           console.log('Evento predeterminado:', isPredeterminado);
+          console.log('Evento datos:', this.evento);
           if (isPredeterminado) {
               let cantidad = 0;
               try {
@@ -119,6 +120,10 @@ export class EventosDificultadesComponent implements OnInit {
     try {
       const res = await firstValueFrom(this.eventoService.getEventosDificultadesByEventoId(evento_id));
       this.dificultadesEventos = res.response;
+      if(!this.evento?.isPredeterminado === true){
+        console.log('Removiendo predeterminado de la lista');
+        this.dificultadesEventos = this.dificultadesEventos.filter(ed => ed.dificultad.nombre.toLowerCase() !== 'predeterminado');
+      }
     } catch (err) {
       console.error(err);
     }
