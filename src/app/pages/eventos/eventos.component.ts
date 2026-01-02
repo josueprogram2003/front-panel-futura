@@ -237,21 +237,19 @@ export class EventosComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
 
-    const nuevoValor = !evento.isPredeterminadoBoolean;
+    const nuevoValor = evento.isPredeterminadoBoolean;
 
     this.confirmationService.confirm({
       key: 'eventosConfirm',
-      header: 'Confirmar Predeterminado',
+      header: 'Confirmar Dificultad',
       message: nuevoValor
-        ? `¿Deseas marcar el evento "${evento.nombre}" como predeterminado?`
-        : `¿Deseas quitar el evento "${evento.nombre}" como predeterminado?`,
+        ? `¿Deseas que el evento "${evento.nombre}" tenga dificultades?`
+        : `¿Deseas que el evento "${evento.nombre}" no tenga dificultades?`,
       icon: 'pi pi-star',
 
       accept: async () => {
         this.loading = true;
         try {
-          evento.isPredeterminadoBoolean = nuevoValor;
-
           await firstValueFrom(
             this.eventoService.setEventoPredeterminado(evento.id)
           );
@@ -296,6 +294,7 @@ export class EventosComponent implements OnInit {
         accept: async () => {
           this.loading = true;
           try {
+            eventoData.isPredeterminado = true;
             const res = await firstValueFrom(this.eventoService.saveEvento(eventoData));
             this.loading = false;
             this.loadEventos(); 

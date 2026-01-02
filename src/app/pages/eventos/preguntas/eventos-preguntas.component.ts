@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { forkJoin, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -12,7 +12,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TagModule } from 'primeng/tag';
-import { TooltipModule } from 'primeng/tooltip';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { Evento, EventoDificultad, Pregunta } from '../../../core/models';
 import { EventoService } from '../../../core/services/evento.service';
@@ -75,7 +74,6 @@ export class EventosPreguntasComponent implements OnInit {
       if (eId && dId) {
         this.eventoId = +eId;
         this.dificultadEventoId = +dId;
-
         const state = history.state;
         if (state) {
             if (state.difficultyName) this.difficultyName = state.difficultyName;
@@ -86,7 +84,8 @@ export class EventosPreguntasComponent implements OnInit {
                 this.isPredeterminado = state.isPredeterminado;
             }
         }
-
+        console.log('Evento isPredeterminado:', this.evento);
+        console.log(this.isPredeterminado);
         this.loadData();
       }
     });
@@ -101,7 +100,6 @@ export class EventosPreguntasComponent implements OnInit {
          this.preguntas = await firstValueFrom(this.eventoService.getEventosDificultadesPreguntasByEventoDificultadId(this.dificultadEventoId)).then(res => res.response);
       }
 
-      // this.evento = await firstValueFrom(this.eventoService.getEventoById(this.eventoId)).then(res => res.response);
       this.loading = false;
     } catch (err) {
       this.loading = false;
@@ -119,8 +117,6 @@ export class EventosPreguntasComponent implements OnInit {
 
   editQuestion(pregunta: Pregunta) {
     this.pregunta = JSON.parse(JSON.stringify(pregunta));
-    
-    // Fix: Convert numeric 1/0 to boolean for p-checkbox
     if (this.pregunta.alternativas) {
         this.pregunta.alternativas.forEach(alt => {
             // @ts-ignore
@@ -170,23 +166,19 @@ export class EventosPreguntasComponent implements OnInit {
   }
 
   validateQuestion(): boolean {
-    // 1. Validar texto de la pregunta
     if (!this.pregunta.pregunta?.trim()) {
       return false;
     }
 
-    // 2. Validar alternativas
     if (!this.pregunta.alternativas || this.pregunta.alternativas.length === 0) {
       return false;
     }
 
-    // 3. Validar que todas las alternativas tengan texto (solo para opción múltiple)
     if (this.pregunta.tipo === 'alternativa') {
         const invalidAlt = this.pregunta.alternativas.some(alt => !alt.texto?.trim());
         if (invalidAlt) return false;
     }
 
-    // 4. Validar que haya al menos una respuesta correcta
     const hasCorrect = this.pregunta.alternativas.some(alt => alt.respuesta_correcta);
     if (!hasCorrect) return false;
 
@@ -197,7 +189,12 @@ export class EventosPreguntasComponent implements OnInit {
     this.submitted = true;
     if (this.validateQuestion()) {
         this.pregunta.evento_dificultad_id = this.dificultadEventoId;
+        if (this.evento?.isPredeterminado) {
+          this.pregunta.evento_id = this.eventoId;
+        }
+        console.log('Adding to buffer:', this.pregunta);
         this.newQuestionsBuffer.push({...this.pregunta});
+        console.log('Buffer now:', this.newQuestionsBuffer);
         this.pregunta = this.createEmptyQuestion();
         this.submitted = false;
         this.messageService.add({ severity: 'info', summary: 'Agregada', detail: 'Pregunta agregada a la lista para guardar' });
@@ -213,11 +210,7 @@ export class EventosPreguntasComponent implements OnInit {
   editFromBuffer(index: number) {
       if (this.validateQuestion()) {
           this.addToBuffer();
-      }
-      // Si la pregunta actual sigue teniendo datos (no se pudo agregar al buffer), 
-      // decidimos si sobrescribir o no. Por simplicidad, asumimos que si el usuario
-      // quiere editar una anterior, prioriza eso.
-      
+      }  
       const questionToEdit = this.newQuestionsBuffer[index];
       this.newQuestionsBuffer.splice(index, 1);
       this.pregunta = { ...questionToEdit };
@@ -225,24 +218,16 @@ export class EventosPreguntasComponent implements OnInit {
 
   saveQuestion() {
     this.submitted = true;
-
-    // Check if we have anything to save: either buffer is not empty OR current form is valid
     const isCurrentValid = this.validateQuestion();
-    // Si hay algo escrito pero no es válido, detener.
-    // Excepción: si está vacío completamente (usuario solo quería guardar el buffer)
     const isCurrentEmpty = !this.pregunta.pregunta?.trim(); 
-
     if (!isCurrentValid && !isCurrentEmpty) {
         this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'La pregunta actual está incompleta. Complétela o bórrela antes de guardar.' });
         return;
     }
-
     const hasCurrent = isCurrentValid;
     const hasBuffer = this.newQuestionsBuffer.length > 0;
-
     if (hasCurrent || hasBuffer) {
       const isEdit = this.pregunta.id !== 0;
-      
       this.confirmationService.confirm({
         key: 'eventosPreguntasConfirm',
         message: isEdit ? '¿Estás seguro de actualizar esta pregunta?' : `¿Estás seguro de crear ${this.newQuestionsBuffer.length + (hasCurrent ? 1 : 0)} preguntas?`,
@@ -251,16 +236,13 @@ export class EventosPreguntasComponent implements OnInit {
         accept: async () => {
             this.loading = true;
             this.message = isEdit ? 'Actualizando pregunta...' : 'Guardando preguntas...';
-            
             try {
-                // Ensure foreign key is set for the current question form
                 this.pregunta.evento_dificultad_id = this.dificultadEventoId;
-
                 if (isEdit) {
-                    // Update single (via specific endpoint as requested)
+                  if (this.isPredeterminado) {
+                      this.pregunta.evento_id = this.eventoId;
+                  }
                     await firstValueFrom(this.eventoService.updatePreguntaCompleto(this.pregunta));
-                    
-                    // Update local list
                     if (this.eventoDificultad?.preguntas) {
                         const index = this.eventoDificultad.preguntas.findIndex(q => q.id === this.pregunta.id);
                         if (index !== -1) {
@@ -268,17 +250,18 @@ export class EventosPreguntasComponent implements OnInit {
                         }
                     }
                 } else {
-                    // Insert bulk
                     const questionsToSave = [...this.newQuestionsBuffer];
                     if (hasCurrent) {
                         questionsToSave.push(this.pregunta);
                     }
 
+                    console.log(this.evento?.isPredeterminado);
+                    if(questionsToSave.length === 1 && this.isPredeterminado) {
+                      questionsToSave[0].evento_id = this.eventoId;
+                    }
                     const res = await firstValueFrom(this.eventoService.insertPreguntasMasivo(questionsToSave));
-                    console.log('Bulk insert response:', res);
                     const savedQuestions = res.response;
 
-                    // Add new questions to local list if returned
                     if (savedQuestions && Array.isArray(savedQuestions)) {
                          this.preguntas = [...this.preguntas, ...savedQuestions];
                     }

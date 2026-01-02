@@ -6,7 +6,6 @@ export interface Pregunta {
   tipo: string;
   pregunta: string;
   isActive: boolean;
-
-  // Navigation property
+  evento_id?: number | null;
   alternativas?: Alternativa[];
 }
