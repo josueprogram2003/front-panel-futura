@@ -2,32 +2,33 @@
 
 <div class="card p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-4rem)] flex flex-col">
   <p-toast></p-toast>
-  <p-confirmDialog key="eventosDificultadesConfirm" [style]="{ width: '450px' }" appendTo="body" styleClass="custom-dialog-header" acceptButtonStyleClass="!bg-[#08215C] !border-[#08215C]" rejectButtonStyleClass="p-button-text p-button-secondary"></p-confirmDialog>
+  <p-confirmDialog key="eventosDificultadesConfirm" [style]="{ width: '450px' }" [breakpoints]="{ '960px': '75vw', '640px': '90vw' }" appendTo="body" styleClass="custom-dialog-header" acceptButtonStyleClass="!bg-[#08215C] !border-[#08215C]" rejectButtonStyleClass="p-button-text p-button-secondary"></p-confirmDialog>
 
   <div class="fade-in flex flex-col h-full">
     <div
       class="flex-none flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
       <div>
-        <nav class="flex items-center gap-2 text-sm text-slate-500 mb-2">
-          <a routerLink="/eventos" class="hover:text-primary-600 transition-colors flex items-center gap-1">
-            <i class="pi pi-home text-xs"></i> Eventos
+        <nav class="flex items-center gap-2 text-sm text-slate-500 mb-2 overflow-x-auto whitespace-nowrap">
+          <a routerLink="/eventos" class="hover:text-blue-600 transition-colors flex items-center gap-1">
+            <i class="pi pi-calendar"></i>
+            Eventos
           </a>
-          <i class="pi pi-angle-right text-xs"></i>
+          <i class="pi pi-chevron-right text-xs"></i>
           <span class="font-semibold text-slate-800">Dificultad</span>
         </nav>
-        <div class="flex items-center gap-3">
-          <h1 class="text-3xl font-bold text-slate-900 tracking-tight m-0">Dificultades del Evento</h1>
+        <div class="flex flex-col md:flex-row md:items-center gap-3">
+          <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight m-0">Dificultades del Evento</h1>
           <span
-            class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full uppercase tracking-wide border border-blue-100">
+            class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full uppercase tracking-wide border border-blue-100 w-fit">
             Configuración
           </span>
         </div>
         <p class="text-slate-500 mt-2 text-lg">Asigna y gestiona los niveles de dificultad para este evento específico.
         </p>
       </div>
-      <div class="flex gap-3">
+      <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
         <p-button *ngIf="!evento?.isPredeterminado" label="Nueva Dificultad" icon="pi pi-plus" (onClick)="openNewDifficulty()"
-          styleClass="shadow-lg !bg-[#08215C] !border-[#08215C]" [rounded]="true">
+          styleClass="shadow-lg !bg-[#08215C] !border-[#08215C] w-full md:w-auto" [rounded]="true">
         </p-button>
       </div>
     </div>
@@ -83,6 +84,7 @@
     <p-dialog 
         [(visible)]="difficultyDialog" 
         [style]="{ width: '450px' }" 
+        [breakpoints]="{ '960px': '75vw', '640px': '90vw' }"
         [modal]="true" 
         appendTo="body"
         styleClass="p-fluid custom-dialog-header">

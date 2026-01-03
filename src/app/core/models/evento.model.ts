@@ -7,6 +7,7 @@ export interface Evento {
   fecha?: string | Date;
   isActive: boolean;
   isVisible?: number;
+  isChange?: boolean;
   isPredeterminado?: boolean;
   evento_dificultad?: EventoDificultad[];
 }

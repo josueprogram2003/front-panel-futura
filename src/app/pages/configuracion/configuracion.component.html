@@ -74,8 +74,8 @@
         </p-tabPanel>
     </p-tabView>
 
-    <div class="mt-8 flex justify-end gap-3 max-w-4xl border-t border-slate-100 pt-6">
-        <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary"></p-button>
-        <p-button label="Guardar Cambios" icon="pi pi-check" styleClass="!bg-[#08215C] !border-[#08215C]" [rounded]="true" (onClick)="saveConfig()"></p-button>
+    <div class="mt-8 flex flex-col-reverse md:flex-row justify-end gap-3 border-t border-slate-100 pt-6">
+        <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" styleClass="w-full md:w-auto"></p-button>
+        <p-button label="Guardar Cambios" icon="pi pi-check" styleClass="!bg-[#08215C] !border-[#08215C] w-full md:w-auto" [rounded]="true" (onClick)="saveConfig()"></p-button>
     </div>
 </div>

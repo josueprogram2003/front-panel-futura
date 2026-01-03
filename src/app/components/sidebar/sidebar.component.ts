@@ -1,4 +1,4 @@
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, Inject, PLATFORM_ID, Output, EventEmitter } from '@angular/core';
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Ripple } from 'primeng/ripple';
@@ -11,6 +11,8 @@ import { Ripple } from 'primeng/ripple';
   styleUrl: './sidebar.component.css'
 })
 export class SidebarComponent {
+  @Output() closeSidebar = new EventEmitter<void>();
+
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(PLATFORM_ID) private platformId: Object
