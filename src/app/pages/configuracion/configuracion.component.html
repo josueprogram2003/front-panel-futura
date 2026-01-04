@@ -20,13 +20,11 @@
             </div>
         </p-tabPanel>
 
-        <!-- Tab: Trivia -->
         <p-tabPanel header="Trivia" leftIcon="pi pi-question-circle">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-4" [formGroup]="configForm">
                 <div class="col-span-1 md:col-span-2">
                     <h3 class="text-lg font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100">Personalización de Colores</h3>
                 </div>
-
                 <div class="field">
                     <label class="font-semibold block mb-2 text-slate-700">Color Texto Pregunta</label>
                     <div class="flex items-center gap-3">
@@ -34,8 +32,6 @@
                         <input type="text" pInputText [ngModel]="colors.text_color_pregunta" (ngModelChange)="updateColor('text_color_pregunta', $event)" [ngModelOptions]="{standalone: true}" class="w-32" />
                     </div>
                 </div>
-
-                <!-- Color Alternativa -->
                 <div class="field">
                     <label class="font-semibold block mb-2 text-slate-700">Color Texto Alternativa</label>
                     <div class="flex items-center gap-3">
@@ -43,26 +39,20 @@
                         <input type="text" pInputText [ngModel]="colors.text_color_alternativa" (ngModelChange)="updateColor('text_color_alternativa', $event)" [ngModelOptions]="{standalone: true}" class="w-32" />
                     </div>
                 </div>
-
-                <!-- Color Botón Alternativa -->
                 <div class="field">
-                    <label class="font-semibold block mb-2 text-slate-700">Color Botón Alternativa</label>
+                    <label class="font-semibold block mb-2 text-slate-700">Color de fondo de respuesta seleccionada</label>
                     <div class="flex items-center gap-3">
                         <p-colorpicker [ngModel]="colors.color_boton_alternativa" (ngModelChange)="updateColor('color_boton_alternativa', $event)" [ngModelOptions]="{standalone: true}" [inline]="false"></p-colorpicker>
                         <input type="text" pInputText [ngModel]="colors.color_boton_alternativa" (ngModelChange)="updateColor('color_boton_alternativa', $event)" [ngModelOptions]="{standalone: true}" class="w-32" />
                     </div>
                 </div>
-
-                <!-- Color Letra Alternativa -->
-                <div class="field">
+                <!-- <div class="field">
                     <label class="font-semibold block mb-2 text-slate-700">Color Letra Alternativa</label>
                     <div class="flex items-center gap-3">
                         <p-colorpicker [ngModel]="colors.color_letra_alternativa" (ngModelChange)="updateColor('color_letra_alternativa', $event)" [ngModelOptions]="{standalone: true}" [inline]="false"></p-colorpicker>
                         <input type="text" pInputText [ngModel]="colors.color_letra_alternativa" (ngModelChange)="updateColor('color_letra_alternativa', $event)" [ngModelOptions]="{standalone: true}" class="w-32" />
                     </div>
-                </div>
-
-                <!-- Color Numeración -->
+                </div> -->
                 <div class="field">
                     <label class="font-semibold block mb-2 text-slate-700">Color Numeración</label>
                     <div class="flex items-center gap-3">

@@ -16,6 +16,14 @@
             </div>
             <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
                 <p-button 
+                    label="Actualizar" 
+                    icon="pi pi-refresh" 
+                    (onClick)="loadDificultades()"
+                    styleClass="shadow-lg w-full md:w-auto"
+                    severity="help"
+                    [rounded]="true">
+                </p-button>
+                <p-button 
                     label="Nueva Dificultad" 
                     icon="pi pi-plus" 
                     (onClick)="openNewDificultad()"

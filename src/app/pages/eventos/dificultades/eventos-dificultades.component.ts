@@ -66,54 +66,58 @@ export class EventosDificultadesComponent implements OnInit {
             this.evento = state.eventoData;
         }
 
-        this.loading = true;
-        this.message = 'Cargando información del evento...';
-        try {
-          // If event wasn't passed in state, fetch it
-          if (!this.evento) {
-             await this.getEvento(this.eventoId || 0);
-          }
-
-          const isPredeterminado = this.evento?.isPredeterminado === true || this.evento?.isPredeterminado === (1 as any);
-          console.log('Evento predeterminado:', isPredeterminado);
-          console.log('Evento datos:', this.evento);
-          if (isPredeterminado) {
-              let cantidad = 0;
-              try {
-                   const res = await firstValueFrom(this.eventoService.getPreguntasCountByEventoId(this.eventoId));
-                   cantidad = res.response?.cantidad || 0;
-              } catch (e) {
-                   console.error('Error al obtener cantidad de preguntas', e);
-              }
-
-              // Mock "Predeterminado" difficulty
-              const defaultDiff: Dificultad = {
-                  id: 0,
-                  nombre: 'Predeterminado',
-                  isActive: true
-              };
-              
-              this.dificultadesEventos = [{
-                  id: 0,
-                  evento: this.evento!,
-                  dificultad: defaultDiff,
-                  cantidad_preguntas: cantidad
-              }];
-          } else {
-              // Load existing difficulties
-              await this.loadDificultadByEventoId(this.eventoId || 0);
-              // Load catalog
-              await this.getDificultades();
-
-              // Remove any "Predeterminado" difficulty from the list if it accidentally appears
-              this.dificultadesEventos = this.dificultadesEventos.filter(ed => ed.dificultad.nombre.toLowerCase() !== 'predeterminado');
-          }
-
-        } finally {
-          this.loading = false;
-        }
+        await this.loadData();
       }
     });
+  }
+
+  async loadData() {
+    this.loading = true;
+    this.message = 'Cargando información...';
+    try {
+      // If event wasn't passed in state, fetch it
+      if (!this.evento) {
+         await this.getEvento(this.eventoId || 0);
+      }
+
+      const isPredeterminado = this.evento?.isPredeterminado === true || this.evento?.isPredeterminado === (1 as any);
+      console.log('Evento predeterminado:', isPredeterminado);
+      console.log('Evento datos:', this.evento);
+      if (isPredeterminado) {
+          let cantidad = 0;
+          try {
+               const res = await firstValueFrom(this.eventoService.getPreguntasCountByEventoId(this.eventoId));
+               cantidad = res.response?.cantidad || 0;
+          } catch (e) {
+               console.error('Error al obtener cantidad de preguntas', e);
+          }
+
+          // Mock "Predeterminado" difficulty
+          const defaultDiff: Dificultad = {
+              id: 0,
+              nombre: 'Predeterminado',
+              isActive: true
+          };
+          
+          this.dificultadesEventos = [{
+              id: 0,
+              evento: this.evento!,
+              dificultad: defaultDiff,
+              cantidad_preguntas: cantidad
+          }];
+      } else {
+          // Load existing difficulties
+          await this.loadDificultadByEventoId(this.eventoId || 0);
+          // Load catalog
+          await this.getDificultades();
+
+          // Remove any "Predeterminado" difficulty from the list if it accidentally appears
+          this.dificultadesEventos = this.dificultadesEventos.filter(ed => ed.dificultad.nombre.toLowerCase() !== 'predeterminado');
+      }
+
+    } finally {
+      this.loading = false;
+    }
   }
 
   async loadDificultadByEventoId(evento_id:number){
