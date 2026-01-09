@@ -27,12 +27,12 @@ export class SidebarComponent {
     {
       label: 'Configuración',
       icon: 'settings',
-      route: '/configuracion'
+      route: '/panel/configuracion'
     },
     {
       label: 'Eventos y Preguntas',
       icon: 'event',
-      route: '/eventos'
+      route: '/panel/eventos'
     }
   ];
 }

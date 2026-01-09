@@ -153,7 +153,7 @@ export class EventosDificultadesComponent implements OnInit {
 
   manageQuestions(eventoDificultad: any) {
     const isPredeterminado = this.evento?.isPredeterminado === true || this.evento?.isPredeterminado === (1 as any);
-    this.router.navigate(['/eventos', this.eventoId, 'dificultades', eventoDificultad.id, 'preguntas'], {
+    this.router.navigate(['/panel', 'eventos', this.eventoId, 'dificultades', eventoDificultad.id, 'preguntas'], {
       state: { 
         difficultyName: eventoDificultad.dificultad.nombre,
         eventName: this.evento?.nombre,
