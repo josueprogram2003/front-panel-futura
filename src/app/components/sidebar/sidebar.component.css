@@ -1,1 +1,4 @@
-/* Styles are handled via Tailwind CSS in the HTML template */
+:host {
+  display: block;
+  height: 100%;
+}

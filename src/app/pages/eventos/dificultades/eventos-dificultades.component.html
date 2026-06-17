@@ -1,133 +1,137 @@
-<app-loading-overlay [loading]="loading"></app-loading-overlay>
-
-<div class="card p-4 md:p-6 bg-white rounded-xl shadow-sm border border-slate-100 h-[calc(100vh-6rem)] md:h-[calc(100vh-4rem)] flex flex-col">
+<div class="flex flex-col h-full">
+  <app-loading-overlay [loading]="loading"></app-loading-overlay>
   <p-toast></p-toast>
-  <p-confirmDialog key="eventosDificultadesConfirm" [style]="{ width: '450px' }" [breakpoints]="{ '960px': '75vw', '640px': '90vw' }" appendTo="body" styleClass="custom-dialog-header" acceptButtonStyleClass="!bg-[#08215C] !border-[#08215C]" rejectButtonStyleClass="p-button-text p-button-secondary"></p-confirmDialog>
+  <p-confirmDialog key="eventosDificultadesConfirm" [style]="{ width: '420px' }" appendTo="body"
+    styleClass="warm-confirm" acceptButtonStyleClass="btn-primary"
+    rejectButtonStyleClass="p-button-text p-button-secondary">
+  </p-confirmDialog>
 
-  <div class="fade-in flex flex-col h-full">
-    <div
-      class="flex-none flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 md:mb-8 pb-4 md:pb-6 border-b border-slate-100">
-      <div>
-        <nav class="flex items-center gap-2 text-xs sm:text-sm text-slate-500 mb-2 overflow-x-auto whitespace-nowrap">
-          <a routerLink="/panel/eventos" class="hover:text-blue-600 transition-colors flex items-center gap-1">
-            <i class="pi pi-calendar"></i>
-            Eventos
-          </a>
-          <i class="pi pi-chevron-right text-[10px] sm:text-xs"></i>
-          <span class="font-semibold text-slate-800">Dificultad</span>
-        </nav>
-        <div class="flex flex-col md:flex-row md:items-center gap-3">
-          <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 tracking-tight m-0">Dificultades del Evento</h1>
-          <span
-            class="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] sm:text-xs font-bold rounded-full uppercase tracking-wide border border-blue-100 w-fit">
-            Configuración
-          </span>
-        </div>
-        <p class="text-slate-500 mt-2 text-sm sm:text-base md:text-lg">Asigna y gestiona los niveles de dificultad para este evento específico.
-        </p>
+  <!-- Header -->
+  <div class="flex-none flex flex-col md:flex-row md:items-end justify-between gap-4 pb-5 mb-5 border-b border-[#f0ede8]">
+    <div>
+      <nav class="flex items-center gap-1.5 text-xs text-[#a8a29e] mb-2">
+        <a routerLink="/panel/eventos" class="hover:text-[#2563eb] transition-colors flex items-center gap-1">
+          <i class="pi pi-calendar text-[10px]"></i> Eventos
+        </a>
+        <i class="pi pi-chevron-right text-[9px]"></i>
+        <span class="text-[#44403c] font-medium">Dificultades</span>
+      </nav>
+      <div class="flex flex-wrap items-center gap-2">
+        <h1 class="text-2xl font-bold text-[#1c1917] tracking-tight">Dificultades del evento</h1>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md bg-[#eff6ff] border border-[#dbeafe] text-[11px] font-semibold text-[#2563eb] uppercase tracking-wide">
+          Configuración
+        </span>
       </div>
-      <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-        <p-button 
-            label="Actualizar" 
-            icon="pi pi-refresh" 
-            (onClick)="loadData()"
-            styleClass="shadow-lg w-full md:w-auto"
-            severity="success"
-            [rounded]="true">
-        </p-button>
-        <p-button *ngIf="!evento?.isPredeterminado" label="Nueva Dificultad" icon="pi pi-plus" (onClick)="openNewDifficulty()"
-          styleClass="shadow-lg !bg-[#08215C] !border-[#08215C] w-full md:w-auto" [rounded]="true">
-        </p-button>
-      </div>
+      <p class="text-sm text-[#78716c] mt-1">Asigna y gestiona los niveles de dificultad para este evento.</p>
     </div>
-    <div class="flex-1 overflow-hidden relative">
-      <p-table [value]="dificultadesEventos" [rows]="10" [paginator]="true" [rowHover]="true" dataKey="id"
-        styleClass="p-datatable-sm h-full flex flex-col" [scrollable]="true" scrollHeight="flex">
-
-        <ng-template pTemplate="header">
-          <tr class="bg-slate-400">
-            <th style="width: 5rem" class="!text-center !bg-[#2B7FFF] !text-white">#</th>
-            <th style="width: 50%" class="!text-center !bg-[#2B7FFF] !text-white">Dificultad</th>
-            <th style="width: 20%" class="!text-center !bg-[#2B7FFF] !text-white">Preguntas</th>
-            <th style="width: 25%" class="!text-center !bg-[#2B7FFF] !text-white">Acciones</th>
-          </tr>
-        </ng-template>
-
-        <ng-template pTemplate="body" let-ed let-rowIndex="rowIndex">
-          <tr>
-            <td class="text-slate-500 !text-center">{{ rowIndex + 1 }}</td>
-            <td class="font-medium text-slate-800 !text-center">{{ ed.dificultad?.nombre }}</td>
-            <td class="!text-center">
-              <span
-                class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600 !text-center">
-                {{ ed.cantidad_preguntas || 0 }} preguntas
-              </span>
-            </td>
-            <td class="!text-center">
-              <div class="flex justify-center gap-2">
-                <p-button icon="pi pi-list" [rounded]="true" [text]="true" severity="info" pTooltip="Ver Preguntas"
-                  tooltipPosition="top" (onClick)="manageQuestions(ed)">
-                </p-button>
-                <ng-container *ngIf="ed.id !== 0">
-                  <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="secondary" pTooltip="Editar"
-                    tooltipPosition="top" (onClick)="editDifficulty(ed)">
-                  </p-button>
-                  <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Eliminar"
-                    tooltipPosition="top" (onClick)="deleteDifficulty(ed)">
-                  </p-button>
-                </ng-container>
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="4" class="text-center p-4">No hay dificultades registradas para este evento.</td>
-          </tr>
-        </ng-template>
-      </p-table>
+    <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto ">
+      <p-button label="Actualizar" icon="pi pi-refresh" (onClick)="loadData()"
+        styleClass="w-full sm:w-auto" severity="secondary" [rounded]="true">
+      </p-button>
+      <p-button *ngIf="!evento?.isPredeterminado" label="Nueva dificultad" icon="pi pi-plus"
+        (onClick)="openNewDifficulty()" styleClass="btn-primary w-full sm:w-auto" [rounded]="true">
+      </p-button>
     </div>
-
-    <p-dialog 
-        [(visible)]="difficultyDialog" 
-        [style]="{ width: '450px' }" 
-        [breakpoints]="{ '960px': '75vw', '640px': '90vw' }"
-        [modal]="true" 
-        appendTo="body"
-        styleClass="p-fluid custom-dialog-header">
-        
-        <ng-template pTemplate="header">
-            <div class="flex justify-between items-center w-full">
-                <span class="text-xl font-bold text-white">Detalles de la Dificultad</span>
-            </div>
-        </ng-template>
-
-        <ng-template pTemplate="content">
-            <div class="field mb-4 mt-4">
-                <label for="dificultad" class="font-semibold block mb-2 text-slate-700">Dificultad <span class="text-red-500">*</span></label>
-                <p-dropdown 
-                    [(ngModel)]="selectedDifficulty"
-                    [options]="dificultades" 
-                    optionLabel="nombre" 
-                    dataKey="id"
-                    placeholder="Seleccione una dificultad"
-                    [showClear]="true"
-                    appendTo="body"
-                    [style]="{'width':'100%'}"
-                    [ngClass]="{'ng-invalid ng-dirty': submitted && !selectedDifficulty}">
-                </p-dropdown>
-                <div *ngIf="submitted && !selectedDifficulty" class="flex items-center gap-2 mt-2 text-red-500 bg-red-50 px-3 py-2 rounded-lg border border-red-100 fade-in transition-all">
-                    <i class="pi pi-exclamation-circle text-sm"></i>
-                    <span class="text-sm font-medium">La dificultad es requerida.</span>
-                </div>
-            </div>
-        </ng-template>
-
-        <ng-template pTemplate="footer">
-            <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="hideDialog()"></p-button>
-            <p-button label="Guardar" icon="pi pi-check" styleClass="!bg-[#08215C] !border-[#08215C]" [rounded]="true" (onClick)="saveDifficulty()"></p-button>
-        </ng-template>
-    </p-dialog> 
   </div>
+
+  <!-- Table -->
+  <div class="flex-1 overflow-hidden relative fade-in">
+    <p-table
+      [value]="dificultadesEventos"
+      [rows]="10"
+      [paginator]="true"
+      [rowHover]="true"
+      dataKey="id"
+      styleClass="p-datatable-sm h-full flex flex-col"
+      [scrollable]="true"
+      scrollHeight="flex">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width:5rem" class="text-center">#</th>
+          <th style="width:50%" class="text-center">Dificultad</th>
+          <th style="width:20%" class="text-center">Preguntas</th>
+          <th style="width:25%" class="text-center">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-ed let-rowIndex="rowIndex">
+        <tr>
+          <td class="text-center text-[#a8a29e] text-xs">{{ rowIndex + 1 }}</td>
+          <td class="text-center font-medium text-[#1c1917]">{{ ed.dificultad?.nombre }}</td>
+          <td class="text-center">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-[#f7f6f3] border border-[#e4e0da] text-xs font-medium text-[#44403c]">
+              {{ ed.cantidad_preguntas || 0 }} preguntas
+            </span>
+          </td>
+          <td class="text-center">
+            <div class="flex justify-start gap-1">
+              <p-button icon="pi pi-list" [rounded]="true" [text]="true" severity="info"
+                pTooltip="Ver preguntas" tooltipPosition="top" (onClick)="manageQuestions(ed)">
+              </p-button>
+              <ng-container *ngIf="ed.id !== 0">
+                <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="secondary"
+                  pTooltip="Editar" tooltipPosition="top" (onClick)="editDifficulty(ed)">
+                </p-button>
+                <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                  pTooltip="Eliminar" tooltipPosition="top" (onClick)="deleteDifficulty(ed)">
+                </p-button>
+              </ng-container>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="text-center py-12">
+            <i class="pi pi-chart-bar text-4xl text-[#e4e0da] block mb-3"></i>
+            <p class="text-sm text-[#a8a29e]">No hay dificultades para este evento.</p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Dialog dificultad -->
+  <p-dialog
+    [(visible)]="difficultyDialog"
+    [style]="{ width: '420px' }"
+    [breakpoints]="{ '960px': '75vw', '640px': '92vw' }"
+    [modal]="true"
+    appendTo="body"
+    styleClass="p-fluid warm-dialog">
+
+    <ng-template pTemplate="header">
+      <span class="font-bold text-[#1c1917]">Detalle de dificultad</span>
+    </ng-template>
+
+    <ng-template pTemplate="content">
+      <div class="mt-1">
+        <label class="block text-sm font-medium text-[#44403c] mb-1.5">
+          Dificultad <span class="text-red-500">*</span>
+        </label>
+        <p-dropdown
+          [(ngModel)]="selectedDifficulty"
+          [options]="dificultades"
+          optionLabel="nombre"
+          dataKey="id"
+          placeholder="Seleccione una dificultad"
+          [showClear]="true"
+          appendTo="body"
+          [style]="{'width':'100%'}"
+          [ngClass]="{'ng-invalid ng-dirty': submitted && !selectedDifficulty}">
+        </p-dropdown>
+        <div *ngIf="submitted && !selectedDifficulty"
+          class="flex items-center gap-2 mt-2 text-red-500 bg-red-50 px-3 py-2 rounded-lg text-sm">
+          <i class="pi pi-exclamation-circle"></i> La dificultad es requerida.
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="hideDialog()"></p-button>
+      <p-button label="Guardar" icon="pi pi-check" styleClass="btn-primary" [rounded]="true" (onClick)="saveDifficulty()"></p-button>
+    </ng-template>
+  </p-dialog>
 </div>

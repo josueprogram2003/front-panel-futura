@@ -7,19 +7,17 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
   standalone: true,
   imports: [CommonModule, ProgressSpinnerModule],
   template: `
-    <div *ngIf="loading" class="fixed w-full inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[2px] rounded-[inherit] transition-all duration-300" style="z-index: 10000000000 !important;">
-      <div class="bg-white px-8 py-6 rounded-2xl shadow-2xl border border-slate-100 flex flex-col items-center gap-4 transform transition-all animate-fade-in-up">
-        <div class="relative flex items-center justify-center">
-            <p-progressSpinner 
-              styleClass="w-12 h-12" 
-              strokeWidth="4" 
-              fill="transparent" 
-              animationDuration=".8s">
-            </p-progressSpinner>
-        </div>
-        <div class="flex flex-col items-center gap-1">
-            <span class="text-slate-700 font-semibold text-sm tracking-wide">{{ message }}</span>
-            <span class="text-slate-400 text-xs">Por favor espere...</span>
+    <div *ngIf="loading" class="absolute inset-0 z-50 flex items-center justify-center bg-white/70 backdrop-blur-[3px] rounded-[inherit]">
+      <div class="bg-white px-7 py-5 rounded-2xl shadow-lg border border-[#e4e0da] flex flex-col items-center gap-3">
+        <p-progressSpinner
+          styleClass="w-10 h-10"
+          strokeWidth="3"
+          fill="transparent"
+          animationDuration=".7s">
+        </p-progressSpinner>
+        <div class="flex flex-col items-center gap-0.5">
+          <span class="text-sm font-semibold text-[#1c1917]">{{ message }}</span>
+          <span class="text-xs text-[#a8a29e]">Por favor espere...</span>
         </div>
       </div>
     </div>

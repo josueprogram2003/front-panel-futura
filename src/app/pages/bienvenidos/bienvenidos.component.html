@@ -1,75 +1,142 @@
-<div class="h-[calc(100vh-4rem)] flex flex-col items-center justify-between p-4 md:p-0">
-    
-    <div class="flex-1 flex flex-col items-center justify-center w-full max-w-6xl">
-        <div class="text-center mb-8 md:mb-12 fade-in-up">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-800 mb-2 md:mb-4 tracking-tight">
-                Panel de Administración <span class="text-blue-600 block sm:inline">Futura</span>
-            </h1>
-            <p class="text-base sm:text-lg md:text-xl text-slate-500 max-w-2xl mx-auto px-4">
-                Gestiona tus eventos, trivias y configuraciones del sistema desde un solo lugar.
-            </p>
-        </div>
+<div class="h-full overflow-y-auto fade-in">
+<div class="flex flex-col gap-4">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 w-full px-4 md:px-0">
-            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-slate-100 group cursor-pointer" (click)="navigateTo('/panel/eventos')">
-                <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-blue-50 flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <i class="pi pi-calendar text-xl md:text-2xl text-blue-600"></i>
-                </div>
-                <h3 class="text-xl md:text-2xl font-bold text-slate-800 mb-2 md:mb-3">Eventos</h3>
-                <p class="text-sm md:text-base text-slate-500 mb-4 md:mb-6 leading-relaxed">
-                    Administra los eventos, activa sesiones y gestiona el contenido específico para cada ocasión.
-                </p>
-                <span class="text-blue-600 font-semibold text-sm md:text-base flex items-center gap-2 group-hover:gap-3 transition-all">
-                    Gestionar Eventos <i class="pi pi-arrow-right text-xs md:text-sm"></i>
-                </span>
-            </div>
-            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-slate-100 group cursor-pointer" (click)="navigateTo('/panel/dificultades')">
-                <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-indigo-50 flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <i class="pi pi-chart-bar text-xl md:text-2xl text-indigo-600"></i>
-                </div>
-                <h3 class="text-xl md:text-2xl font-bold text-slate-800 mb-2 md:mb-3">Dificultades</h3>
-                <p class="text-sm md:text-base text-slate-500 mb-4 md:mb-6 leading-relaxed">
-                    Configura los niveles de dificultad para las trivias y preguntas del sistema.
-                </p>
-                <span class="text-indigo-600 font-semibold text-sm md:text-base flex items-center gap-2 group-hover:gap-3 transition-all">
-                    Ver Dificultades <i class="pi pi-arrow-right text-xs md:text-sm"></i>
-                </span>
-            </div>
+  <!-- Hero -->
+  <section class="relative overflow-hidden rounded-2xl bg-[#0f172a] px-7 py-6">
+    <div class="pointer-events-none absolute -top-10 -left-10 h-44 w-44 rounded-full bg-[#2563eb]/30 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-6 right-8 h-36 w-36 rounded-full bg-[#7c3aed]/20 blur-3xl"></div>
 
-            <!-- Configuración Card -->
-            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-slate-100 group cursor-pointer" (click)="navigateTo('/panel/configuracion')">
-                <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-emerald-50 flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <i class="pi pi-cog text-xl md:text-2xl text-emerald-600"></i>
-                </div>
-                <h3 class="text-xl md:text-2xl font-bold text-slate-800 mb-2 md:mb-3">Configuración</h3>
-                <p class="text-sm md:text-base text-slate-500 mb-4 md:mb-6 leading-relaxed">
-                    Ajusta parámetros globales, colores de interfaz y comportamiento de los dispositivos.
-                </p>
-                <span class="text-emerald-600 font-semibold text-sm md:text-base flex items-center gap-2 group-hover:gap-3 transition-all">
-                    Ir a Configuración <i class="pi pi-arrow-right text-xs md:text-sm"></i>
-                </span>
-            </div>
+    <div class="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-3 py-1 mb-3">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]"></span>
+          <span class="text-[11px] font-medium text-white/70">Panel listo</span>
         </div>
+        <h1 class="text-2xl font-bold text-white tracking-tight leading-tight">
+          Hola, <span class="text-[#60a5fa]">{{ (user$ | async)?.name || 'Administrador' }}</span>
+        </h1>
+        <p class="mt-1.5 text-sm text-white/50 max-w-md">
+          Administra eventos, configuras el sistema y accede a todos los flujos de trivia.
+        </p>
+      </div>
+      <div class="flex gap-2 flex-shrink-0">
+        <button
+          type="button"
+          (click)="navigateTo('/panel/eventos')"
+          class="inline-flex items-center gap-2 rounded-lg bg-[#2563eb] px-4 py-2 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(37,99,235,0.45)] transition hover:bg-[#1d4ed8]"
+        >
+          <i class="pi pi-calendar text-sm"></i>
+          Eventos
+        </button>
+        <button
+          type="button"
+          (click)="navigateTo('/panel/configuracion')"
+          class="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/8 px-4 py-2 text-sm font-medium text-white/70 transition hover:bg-white/14 hover:text-white"
+        >
+          <i class="pi pi-cog text-sm"></i>
+          Config.
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="grid grid-cols-3 gap-3">
+
+    <article class="rounded-xl border border-[#e4e0da] bg-white p-4">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-[0.08em] text-[#a8a29e]">Módulos</p>
+          <p class="mt-1 text-2xl font-bold text-[#1c1917] tracking-tight">03</p>
+          <p class="text-xs text-[#78716c]">Eventos, dificultades, config.</p>
+        </div>
+        <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#eff6ff] border border-[#dbeafe]">
+          <i class="pi pi-th-large text-sm text-[#2563eb]"></i>
+        </span>
+      </div>
+    </article>
+
+    <article class="rounded-xl border border-[#e4e0da] bg-white p-4">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-[0.08em] text-[#a8a29e]">Panel</p>
+          <p class="mt-1 text-2xl font-bold text-[#1c1917] tracking-tight">01</p>
+          <p class="text-xs text-[#78716c]">Todo en una sola vista</p>
+        </div>
+        <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#fdf4ff] border border-[#e9d5ff]">
+          <i class="pi pi-desktop text-sm text-[#9333ea]"></i>
+        </span>
+      </div>
+    </article>
+
+    <article class="rounded-xl border border-[#e4e0da] bg-white p-4">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-[0.08em] text-[#a8a29e]">Acceso</p>
+          <p class="mt-1 text-2xl font-bold text-[#1c1917] tracking-tight">24/7</p>
+          <p class="text-xs text-[#78716c]">Atajos a acciones principales</p>
+        </div>
+        <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#fff7ed] border border-[#fed7aa]">
+          <i class="pi pi-bolt text-sm text-[#ea580c]"></i>
+        </span>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- Accesos rápidos -->
+  <section>
+    <div class="mb-3">
+      <h2 class="text-sm font-bold text-[#1c1917] tracking-tight">Accesos rápidos</h2>
+      <p class="text-xs text-[#78716c] mt-0.5">Entra directo a las tareas más usadas.</p>
     </div>
 
-    <div class="text-slate-400 text-xs md:text-sm fixed bottom-3">
-        &copy; 2024 Panel Futura. Todos los derechos reservados.
+    <div class="grid gap-3 md:grid-cols-3">
+
+      <article
+        class="group cursor-pointer rounded-2xl border border-[#dbeafe] bg-white p-5 flex flex-col transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:shadow-blue-100"
+        (click)="navigateTo('/panel/eventos')"
+      >
+        <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#eff6ff] border border-[#dbeafe] transition group-hover:bg-[#dbeafe]">
+          <i class="pi pi-calendar text-base text-[#2563eb]"></i>
+        </div>
+        <h3 class="text-sm font-bold text-[#1c1917] mb-1">Eventos</h3>
+        <p class="text-xs text-[#78716c] leading-relaxed">Crea eventos, entra al detalle y organiza preguntas por dificultad.</p>
+        <div class="mt-3 flex items-center gap-1.5 text-xs font-semibold text-[#2563eb]">
+          Abrir módulo <i class="pi pi-arrow-right text-[10px] transition group-hover:translate-x-0.5"></i>
+        </div>
+      </article>
+
+      <article
+        class="group cursor-pointer rounded-2xl border border-[#e9d5ff] bg-white p-5 flex flex-col transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:shadow-purple-100"
+        (click)="navigateTo('/panel/dificultades')"
+      >
+        <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#fdf4ff] border border-[#e9d5ff] transition group-hover:bg-[#e9d5ff]">
+          <i class="pi pi-chart-bar text-base text-[#9333ea]"></i>
+        </div>
+        <h3 class="text-sm font-bold text-[#1c1917] mb-1">Dificultades</h3>
+        <p class="text-xs text-[#78716c] leading-relaxed">Define niveles globales para mantener la lógica de tus trivias ordenada.</p>
+        <div class="mt-3 flex items-center gap-1.5 text-xs font-semibold text-[#9333ea]">
+          Abrir módulo <i class="pi pi-arrow-right text-[10px] transition group-hover:translate-x-0.5"></i>
+        </div>
+      </article>
+
+      <article
+        class="group cursor-pointer rounded-2xl border border-[#fed7aa] bg-white p-5 flex flex-col transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:shadow-orange-100"
+        (click)="navigateTo('/panel/configuracion')"
+      >
+        <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff7ed] border border-[#fed7aa] transition group-hover:bg-[#fed7aa]">
+          <i class="pi pi-cog text-base text-[#ea580c]"></i>
+        </div>
+        <h3 class="text-sm font-bold text-[#1c1917] mb-1">Configuración</h3>
+        <p class="text-xs text-[#78716c] leading-relaxed">Ajusta apariencia, colores y comportamiento general del sistema.</p>
+        <div class="mt-3 flex items-center gap-1.5 text-xs font-semibold text-[#ea580c]">
+          Abrir módulo <i class="pi pi-arrow-right text-[10px] transition group-hover:translate-x-0.5"></i>
+        </div>
+      </article>
+
     </div>
+  </section>
+
 </div>
-
-<style>
-    .fade-in-up {
-        animation: fadeInUp 0.8s ease-out;
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-</style>
+</div>

@@ -1,71 +1,72 @@
-<div class="h-full w-full bg-slate-900 text-white flex flex-col shadow-2xl border-r border-slate-800 relative">
-  
-  <!-- Close Button (Mobile Only) -->
-  <button (click)="closeSidebar.emit()" class="md:hidden absolute top-4 right-4 text-slate-400 hover:text-white p-2">
-    <i class="pi pi-times text-xl"></i>
+<div class="flex h-full flex-col bg-[#0f172a]">
+
+  <!-- Brand -->
+  <div
+    class="flex items-center gap-3 px-4 py-[1.1rem] border-b border-white/10 cursor-pointer select-none"
+    routerLink="/panel/bienvenidos"
+    (click)="closeSidebar.emit()"
+  >
+    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#2563eb] text-white flex-shrink-0 shadow-[0_0_16px_rgba(37,99,235,0.5)]">
+      <span class="text-sm font-black tracking-wide">F</span>
+    </div>
+    <div class="min-w-0">
+      <h1 class="text-sm font-bold text-white tracking-tight leading-none">FUTURA</h1>
+      <p class="text-[11px] text-white/40 mt-0.5 leading-none">Panel administrativo</p>
+    </div>
+  </div>
+
+  <!-- Close (mobile) -->
+  <button
+    (click)="closeSidebar.emit()"
+    class="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-white/40 transition hover:bg-white/10 hover:text-white/80 md:hidden"
+  >
+    <i class="pi pi-times text-sm"></i>
   </button>
 
-  <!-- Logo / Brand -->
-  <div class="p-4 md:p-6 border-b border-slate-800 flex items-center gap-3 cursor-pointer hover:bg-slate-800/50 transition-colors" routerLink="/panel/bienvenidos" (click)="closeSidebar.emit()">
-    <div class="w-8 h-8 md:w-8 md:h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
-      <span class="font-bold text-white text-base md:text-lg">F</span>
-    </div>
-    <h1 class="text-base md:text-lg font-bold tracking-wide text-white">FUTURA</h1>
-  </div>
-
-  <!-- Navigation -->
-  <nav class="flex-1 overflow-y-auto py-4 md:py-6 px-2 md:px-3">
-    
-    <!-- General Section -->
-    <div class="mb-2 px-4 text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider">General</div>
-    <ul class="space-y-1 mb-6">
-      <!-- Configuración -->
-      <li>
-        <a routerLink="/panel/configuracion" routerLinkActive="bg-blue-600/10 text-blue-400 border-l-4 border-blue-500" pRipple
-           (click)="closeSidebar.emit()"
-           class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all duration-200 rounded-r-lg border-l-4 border-transparent group cursor-pointer relative overflow-hidden">
-          <i class="pi pi-cog text-base md:text-lg group-hover:animate-spin-slow"></i>
-          <span class="text-sm md:text-base">Configuración</span>
+  <!-- Nav -->
+  <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-5">
+    <section *ngFor="let section of menuSections">
+      <p class="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-white/30">
+        {{ section.title }}
+      </p>
+      <div class="space-y-0.5">
+        <a
+          *ngFor="let item of section.items"
+          [routerLink]="item.route"
+          [routerLinkActiveOptions]="{ exact: item.exact }"
+          routerLinkActive="sidebar-active"
+          pRipple
+          (click)="closeSidebar.emit()"
+          class="sidebar-link"
+        >
+          <span class="sidebar-icon">
+            <i class="pi text-sm" [ngClass]="item.icon"></i>
+          </span>
+          <span class="text-sm">{{ item.label }}</span>
         </a>
-      </li>
-    </ul>
-
-    <!-- Trivia Section -->
-    <div class="mb-2 px-4 text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider">Trivia</div>
-    <ul class="space-y-1">
-      <!-- Eventos y Preguntas -->
-      <li>
-        <a routerLink="/panel/eventos" routerLinkActive="bg-blue-600/10 text-blue-400 border-l-4 border-blue-500" pRipple
-           (click)="closeSidebar.emit()"
-           class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all duration-200 rounded-r-lg border-l-4 border-transparent group cursor-pointer relative overflow-hidden">
-          <i class="pi pi-calendar text-base md:text-lg group-hover:text-blue-400 transition-colors"></i>
-          <span class="text-sm md:text-base">Eventos</span>
-        </a>
-      </li>
-
-      <!-- Dificultades -->
-      <li>
-        <a routerLink="/panel/dificultades" routerLinkActive="bg-blue-600/10 text-blue-400 border-l-4 border-blue-500" pRipple
-           (click)="closeSidebar.emit()"
-           class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all duration-200 rounded-r-lg border-l-4 border-transparent group cursor-pointer relative overflow-hidden">
-          <i class="pi pi-tags text-base md:text-lg group-hover:text-blue-400 transition-colors"></i>
-          <span class="text-sm md:text-base">Dificultades</span>
-        </a>
-      </li>
-    </ul>
+      </div>
+    </section>
   </nav>
 
-  <!-- User Profile -->
-  <div class="p-4 border-t border-slate-800 bg-slate-900/50">
-    <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 transition-colors cursor-pointer group">
-      <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shadow-lg">
-        <span class="font-bold text-xs md:text-sm">AD</span>
+  <!-- User -->
+  <div *ngIf="user$ | async as user" class="border-t border-white/10 px-3 py-3.5">
+    <div class="rounded-xl bg-white/8 border border-white/10 p-3 flex items-center gap-3">
+      <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2563eb]/80 text-sm font-bold text-white flex-shrink-0">
+        {{ user.initials }}
       </div>
-      <div class="overflow-hidden">
-        <p class="text-xs md:text-sm font-semibold text-white group-hover:text-blue-400 transition-colors truncate">Administrador</p>
-        <p class="text-[10px] md:text-xs text-slate-500 truncate">admin&#64;futura.com</p>
+      <div class="min-w-0 flex-1">
+        <p class="truncate text-sm font-semibold text-white/90 leading-snug">{{ user.name }}</p>
+        <p class="truncate text-[11px] text-white/40 leading-snug">{{ user.role }}</p>
       </div>
-      <i class="pi pi-chevron-right ml-auto text-[10px] md:text-xs text-slate-600 group-hover:text-slate-400"></i>
+      <button
+        type="button"
+        (click)="logout()"
+        title="Cerrar sesión"
+        class="flex h-8 w-8 items-center justify-center rounded-lg text-white/35 transition hover:bg-white/10 hover:text-red-400 flex-shrink-0"
+      >
+        <i class="pi pi-sign-out text-sm"></i>
+      </button>
     </div>
   </div>
+
 </div>
